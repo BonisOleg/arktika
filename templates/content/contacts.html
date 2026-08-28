@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/content.css' %}?v=20260828m">
+{% endblock %}
+
+{% block title %}{{ contacts_page.seo_title|default:page_title }} — Арктика{% endblock %}
+{% block meta_description %}{% if contacts_page.seo_description %}{{ contacts_page.seo_description }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container content-page">
+  <nav class="breadcrumbs" aria-label="{% trans 'Хлібні крихти' %}">
+    <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
+    <span>/</span>
+    <span aria-current="page">{% trans "Контакти" %}</span>
+  </nav>
+  <h1 class="content-page-title">{{ contacts_page.seo_h1|default:page_title }}</h1>
+
+  <div class="contacts-grid">
+    <div class="contacts-card">
+      {% if contacts_page.intro_text %}
+        <div class="content-page-body">{{ contacts_page.intro_text|linebreaks }}</div>
+      {% endif %}
+      <dl class="contacts-info-list">
+        {% if contacts_page.phone %}
+          <div class="contacts-info-item">
+            <dt>{% trans "Телефон" %}</dt>
+            <dd><a href="tel:{{ contacts_page.phone|cut:' ' }}">{{ contacts_page.phone }}</a></dd>
+          </div>
+        {% endif %}
+        {% if contacts_page.address %}
+          <div class="contacts-info-item">
+            <dt>{% trans "Адреса" %}</dt>
+            <dd>{{ contacts_page.address }}</dd>
+          </div>
+        {% endif %}
+        <div class="contacts-info-item">
+          <dt>{% trans "Оптові продажі" %}</dt>
+          <dd><a href="{{ contacts_page.wholesale_link_url }}" target="_blank" rel="noopener nofollow">rk-arctica.com.ua</a></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="contacts-card">
+      <h2>{% trans "Написати нам" %}</h2>
+      <form method="post" novalidate data-qa="contact-form">
+        {% csrf_token %}
+        <div class="field-grid">
+          <div class="field">
+            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name }}
+            {% if form.name.errors %}<span class="field-errors">{{ form.name.errors.0 }}</span>{% endif %}
+          </div>
+          <div class="field-grid two">
+            <div class="field">
+              <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+              {{ form.phone }}
+            </div>
+            <div class="field">
+              <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+              {{ form.email }}
+            </div>
+          </div>
+          {% if form.non_field_errors %}<span class="field-errors">{{ form.non_field_errors.0 }}</span>{% endif %}
+          <div class="field">
+            <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+            {{ form.message }}
+            {% if form.message.errors %}<span class="field-errors">{{ form.message.errors.0 }}</span>{% endif %}
+          </div>
+          <label class="check-row">
+            {{ form.consent_gdpr }}
+            <span>{{ form.consent_gdpr.label }} — <a href="{% url 'content:privacy' %}" target="_blank">{% trans "політика конфіденційності" %}</a></span>
+          </label>
+          {% if form.captcha %}
+            <div class="field">{{ form.captcha }}</div>
+          {% endif %}
+          <button class="btn btn-primary" type="submit" data-qa="contact-submit">{% trans "Надіслати" %}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260828c">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="{% trans 'Хлібні крихти' %}">
+    <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
+    <span>/</span>
+    <span aria-current="page">{% trans "Пошук" %}</span>
+  </nav>
+
+  <h1 class="search-title">
+    {% if query %}{% blocktrans %}Результати пошуку: «{{ query }}»{% endblocktrans %}{% else %}{% trans "Пошук" %}{% endif %}
+  </h1>
+
+  {% if products %}
+    <div class="catalog-grid" data-qa="product-grid">
+      {% for product in products %}
+        {% include "catalog/partials/catalog_card.html" %}
+      {% endfor %}
+    </div>
+    {% include "partials/pagination.html" %}
+  {% else %}
+    <div class="empty-state">
+      <h2>{% trans "Нічого не знайдено" %}</h2>
+      <p>{% trans "Спробуйте інший запит або перегляньте каталог." %}</p>
+      <a class="btn btn-primary" href="{% url 'catalog:list' %}">{% trans "До каталогу" %}</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

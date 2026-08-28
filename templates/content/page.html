@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/content.css' %}">
+{% endblock %}
+
+{% block title %}{{ page.seo_title|default:page_title }} — Арктика{% endblock %}
+{% block meta_description %}{% if page.seo_description %}{{ page.seo_description }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container content-page">
+  <nav class="breadcrumbs" aria-label="{% trans 'Хлібні крихти' %}">
+    <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
+    <span>/</span>
+    <span aria-current="page">{{ page_title }}</span>
+  </nav>
+  <h1 class="content-page-title">{{ page.seo_h1|default:page_title }}</h1>
+  <div class="content-page-body">
+    {{ page.body|linebreaks }}
+  </div>
+</div>
+{% endblock %}

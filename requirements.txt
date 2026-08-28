@@ -1,0 +1,12 @@
+Django==5.2.5
+python-decouple==3.8
+gunicorn==23.0.0
+whitenoise==6.8.2
+psycopg2-binary==2.9.10
+Pillow==11.1.0
+django-htmx==1.19.0
+django-csp==4.0
+django-unfold==0.44.0
+django-modeltranslation==0.19.11
+django-recaptcha==4.0.0
+requests==2.32.3

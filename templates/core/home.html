@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/home.css' %}?v=20260828k">
+{% endblock %}
+
+{% block content %}
+<section class="hero" aria-label="{% trans 'Головний екран' %}">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="hero-copy-inner">
+        <div class="hero-brand">
+          <img src="{% static 'images/logo-fish.png' %}" alt="">
+          <span>Арктика</span>
+        </div>
+        <h1>
+          <span class="hero-title-line">{{ home.hero_title_line1 }}</span>
+          <span class="hero-title-line">{{ home.hero_title_line2 }}</span>
+        </h1>
+        <p>{{ home.hero_subtitle }}</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="{% url 'catalog:list' %}">{{ home.hero_cta_catalog }}</a>
+          {% if hits %}
+            <a class="btn btn-on-dark" href="#hits">{{ home.hero_cta_hits }}</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      {% if home.hero_image %}
+        <img
+          src="{{ home.hero_image.url }}"
+          alt="{{ home.hero_image_alt }}"
+          width="1600" height="900" decoding="async" fetchpriority="high">
+      {% else %}
+        <img
+          src="{% static 'images/hero-composition.jpg' %}"
+          alt="{{ home.hero_image_alt }}"
+          width="1600" height="900" decoding="async" fetchpriority="high">
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% if hits %}
+<section class="section" id="hits">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-row">
+        <h2>{{ home.hits_title }}</h2>
+        <a class="section-head-link" href="{% url 'catalog:list' %}?tag=hits">{% trans "Усі хіти" %}</a>
+      </div>
+      <p>{{ home.hits_subtitle }}</p>
+    </div>
+    <div class="product-grid" data-qa="product-grid">
+      {% for product in hits %}
+        <a class="product-tile" href="{{ product.get_absolute_url }}">
+          <div class="product-tile-media">
+            {% with photo=product.images.first %}
+              {% if photo %}<img src="{{ photo.image.url }}" alt="">{% else %}<div class="media-placeholder" aria-hidden="true"></div>{% endif %}
+            {% endwith %}
+          </div>
+          <h3>{{ product.name }}</h3>
+          <div class="product-tile-meta">
+            <div class="price-with-vat"><span class="price">{{ product.min_price }} ₴<span class="price-unit">/{{ product.default_option.get_unit_display }}</span></span><span class="price-vat">{% trans "з ПДВ" %}</span></div>
+            {% if product.is_available %}<span class="badge badge-ok">{% trans "В наявності" %}</span>{% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if new_products %}
+<section class="section section-flush">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head-row">
+        <h2>{{ home.news_title }}</h2>
+        <a class="section-head-link" href="{% url 'catalog:list' %}?tag=new">{% trans "Усі новинки" %}</a>
+      </div>
+      <p>{{ home.news_subtitle }}</p>
+    </div>
+    <div class="product-grid">
+      {% for product in new_products %}
+        <a class="product-tile" href="{{ product.get_absolute_url }}">
+          <div class="product-tile-media">
+            {% with photo=product.images.first %}
+              {% if photo %}<img src="{{ photo.image.url }}" alt="">{% else %}<div class="media-placeholder" aria-hidden="true"></div>{% endif %}
+            {% endwith %}
+          </div>
+          <h3>{{ product.name }}</h3>
+          <div class="product-tile-meta">
+            <div class="price-with-vat"><span class="price">{{ product.min_price }} ₴<span class="price-unit">/{{ product.default_option.get_unit_display }}</span></span><span class="price-vat">{% trans "з ПДВ" %}</span></div>
+            <span class="badge">{% trans "Новинка" %}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="trust-strip section" id="about">
+  <div class="container">
+    <ul class="trust-list">
+      {% for item in home.trust_items %}
+        <li>
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.text }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% load i18n l10n %}
+{% include "partials/cart_count_oob.html" with count=items|length %}
+<div id="cart-page-root" data-qa="cart-page" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  {% if items %}
+    <div class="cart-page-grid">
+      <div class="cart-page-items">
+        {% for item in items %}
+          <div class="cart-page-item" data-qty-wrapper>
+            <div class="cart-page-item-media">
+              {% with photo=item.product.images.first %}
+                {% if photo %}<img src="{{ photo.image.url }}" alt="">{% endif %}
+              {% endwith %}
+            </div>
+            <div class="cart-page-item-info">
+              <strong>{{ item.product.name }}</strong>
+              {% if item.weight_option.is_weighted %}
+                <span>{{ item.weight_option.price }} ₴/{{ item.weight_option.get_unit_display }}</span>
+              {% else %}
+                <span>{{ item.weight_option.label }} · {{ item.weight_option.price }} ₴</span>
+              {% endif %}
+            </div>
+            <div class="cart-page-item-controls">
+              <div class="qty-control">
+                <button type="button" data-qty-step="-{{ item.weight_option.step_quantity|unlocalize }}" data-qty-min="{{ item.weight_option.min_quantity|unlocalize }}" aria-label="{% trans 'Менше' %}">−</button>
+                <input type="number" name="quantity" min="0" step="{{ item.weight_option.step_quantity|unlocalize }}" value="{{ item.quantity|unlocalize }}" class="cart-qty-input"
+                       hx-post="{% url 'commerce:cart_item_update' item.id %}" hx-trigger="change" hx-target="#cart-page-root" hx-swap="outerHTML"
+                       hx-vals='{"render": "page"}'>
+                <button type="button" data-qty-step="{{ item.weight_option.step_quantity|unlocalize }}" data-qty-min="{{ item.weight_option.min_quantity|unlocalize }}" aria-label="{% trans 'Більше' %}">+</button>
+              </div>
+              <span class="cart-qty-display">{{ item.quantity_display }}</span>
+              <button type="button" class="cart-page-item-remove"
+                      hx-post="{% url 'commerce:cart_item_remove' item.id %}" hx-target="#cart-page-root" hx-swap="outerHTML"
+                      hx-vals='{"render": "page"}'>{% trans "Видалити" %}</button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="cart-page-summary">
+        <h2>{% trans "Разом" %}</h2>
+        <div class="summary-totals">
+          <div><span>{% trans "Сума товарів" %}</span><strong>{{ subtotal }} ₴</strong></div>
+        </div>
+        {% if subtotal < min_order_amount %}
+          <p class="min-order-hint is-blocked">{% blocktrans %}Мінімальна сума замовлення {{ min_order_amount }} ₴. Додайте ще товарів.{% endblocktrans %}</p>
+        {% else %}
+          <a class="btn btn-primary" href="{% url 'commerce:checkout' %}" data-qa="checkout-cta">{% trans "Оформити замовлення" %}</a>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h2>{% trans "Кошик порожній" %}</h2>
+      <p>{% trans "Додайте товари з каталогу." %}</p>
+      <a class="btn btn-primary" href="{% url 'catalog:list' %}">{% trans "До каталогу" %}</a>
+    </div>
+  {% endif %}
+</div>

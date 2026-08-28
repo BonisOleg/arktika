@@ -1,0 +1,137 @@
+/* Спільні класи форм (checkout, contacts, cart) — field/check-row/messages. */
+
+.field-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.field input,
+.field select,
+.field textarea {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+}
+
+.field textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--color-cyan);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(56, 168, 216, 0.18);
+}
+
+.field-errors {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}
+
+.field-grid.two {
+  grid-template-columns: 1fr;
+}
+
+.check-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  align-items: start;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.check-row a {
+  color: var(--color-cyan);
+  text-decoration: underline;
+}
+
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete-options {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  max-height: 14rem;
+  overflow: auto;
+  background: var(--color-white);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+  display: none;
+}
+
+.autocomplete-options.is-open {
+  display: block;
+}
+
+.autocomplete-options button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  color: var(--color-navy);
+}
+
+.autocomplete-options button:hover {
+  background: var(--color-cyan-mist);
+}
+
+/* Django messages framework */
+.messages {
+  display: grid;
+  gap: 0.5rem;
+  padding: var(--space-4) 0 0;
+}
+
+.message {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.message-success {
+  background: #e5f6ee;
+  color: var(--color-ok);
+}
+
+.message-error {
+  background: #fdecea;
+  color: var(--color-danger);
+}
+
+.message-info,
+.message-warning {
+  background: var(--color-cyan-mist);
+  color: var(--color-navy-mid);
+}
+
+@media (min-width: 640px) {
+  .field-grid.two {
+    grid-template-columns: 1fr 1fr;
+  }
+}

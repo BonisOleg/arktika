@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/checkout.css' %}?v=20260828j">
+{% endblock %}
+
+{% block content %}
+<div class="container checkout order-success">
+  <div class="checkout-card order-success-card">
+    <header class="order-success-head">
+      {% if order.payment_status == "paid" %}
+        <p class="order-success-eyebrow">{% trans "Замовлення оплачено" %}</p>
+      {% else %}
+        <p class="order-success-eyebrow">{% trans "Замовлення прийнято" %}</p>
+      {% endif %}
+      <h1>{% trans "Дякуємо!" %}</h1>
+      <p class="order-success-number">{% trans "Номер" %}: <strong>№{{ order.order_number }}</strong></p>
+    </header>
+
+    <p class="checkout-note order-success-note{% if order.payment_status == 'failed' %} order-success-note--warn{% endif %}">
+      {% if order.payment_status == "paid" %}
+        {% trans "Оплату отримано. Ми зв'яжемось із вами щодо доставки. Статус можна уточнити за номером телефону." %}
+      {% elif order.payment_status == "failed" %}
+        {% trans "Оплату не завершено. Замовлення збережено — можна спробувати оплатити ще раз або дочекатися дзвінка менеджера." %}
+      {% else %}
+        {% trans "Ми зв'яжемось із вами для підтвердження. Статус можна уточнити за номером телефону." %}
+      {% endif %}
+    </p>
+
+    <dl class="order-success-meta">
+      <div class="order-success-meta-row">
+        <dt>{% trans "Отримувач" %}</dt>
+        <dd>
+          <span>{{ order.customer_name }}</span>
+          <span class="order-success-meta-sub">{{ order.customer_phone }}</span>
+        </dd>
+      </div>
+      <div class="order-success-meta-row">
+        <dt>{% trans "Доставка" %}</dt>
+        <dd>
+          <span>{{ order.np_city_name|default:"—" }}</span>
+          <span class="order-success-meta-sub">{{ order.np_warehouse_name|default:"" }}</span>
+        </dd>
+      </div>
+      <div class="order-success-meta-row order-success-meta-total">
+        <dt>{% if order.payment_status == "paid" %}{% trans "Сплачено" %}{% else %}{% trans "До сплати" %}{% endif %}</dt>
+        <dd><strong>{{ order.total_amount }} ₴</strong></dd>
+      </div>
+    </dl>
+
+    <section class="order-success-items" aria-label="{% trans 'Склад замовлення' %}">
+      <h2>{% trans "Ваше замовлення" %}</h2>
+      <ul class="order-success-list">
+        {% for item in order.items.all %}
+          <li class="order-success-item">
+            <div class="order-success-item-info">
+              <strong>{{ item.product_name }}</strong>
+              {% if item.is_weighted %}
+                <span>{{ item.quantity_display }} × {{ item.unit_price }} ₴/{{ item.get_unit_display }}</span>
+              {% else %}
+                <span>{{ item.weight_option_label }} · {{ item.quantity_display }}</span>
+              {% endif %}
+            </div>
+            <div class="order-success-item-sum">{{ item.line_total }} ₴</div>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <div class="order-success-actions">
+      {% if order.payment_status == "pending" or order.payment_status == "failed" %}
+        <a class="btn btn-primary" href="{% url 'commerce:payment_init' order.id %}" data-qa="pay-now">{% trans "Оплатити карткою" %}</a>
+      {% endif %}
+      <a class="btn btn-ghost" href="{% url 'catalog:list' %}">{% trans "Продовжити покупки" %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

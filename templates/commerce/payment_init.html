@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/payment.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container payment-init-page">
+  <h1>{% trans "Перенаправлення на оплату…" %}</h1>
+  <p>{% trans "Якщо перехід не відбувся автоматично — натисніть кнопку нижче." %}</p>
+  <form id="wayforpay-form" method="post" action="{{ form_data.checkout_url }}" class="payment-init-form" accept-charset="utf-8">
+    <input type="hidden" name="merchantAccount" value="{{ form_data.merchantAccount }}">
+    <input type="hidden" name="merchantAuthType" value="{{ form_data.merchantAuthType }}">
+    <input type="hidden" name="merchantDomainName" value="{{ form_data.merchantDomainName }}">
+    <input type="hidden" name="merchantTransactionSecureType" value="{{ form_data.merchantTransactionSecureType }}">
+    <input type="hidden" name="orderReference" value="{{ form_data.orderReference }}">
+    <input type="hidden" name="orderDate" value="{{ form_data.orderDate }}">
+    <input type="hidden" name="amount" value="{{ form_data.amount }}">
+    <input type="hidden" name="currency" value="{{ form_data.currency }}">
+    {% for name in form_data.productName %}<input type="hidden" name="productName[]" value="{{ name }}">{% endfor %}
+    {% for count in form_data.productCount %}<input type="hidden" name="productCount[]" value="{{ count }}">{% endfor %}
+    {% for price in form_data.productPrice %}<input type="hidden" name="productPrice[]" value="{{ price }}">{% endfor %}
+    <input type="hidden" name="serviceUrl" value="{{ form_data.serviceUrl }}">
+    <input type="hidden" name="returnUrl" value="{{ form_data.returnUrl }}">
+    <input type="hidden" name="merchantSignature" value="{{ form_data.merchantSignature }}">
+    <button class="btn btn-primary" type="submit">{% trans "Перейти до оплати" %}</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/payment-init.js' %}" defer></script>
+{% endblock %}

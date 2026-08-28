@@ -1,0 +1,18 @@
+.payment-init-page {
+  padding: var(--space-7) 0;
+  text-align: center;
+}
+
+.payment-init-page h1 {
+  font-family: var(--font-display);
+  color: var(--color-navy);
+}
+
+.payment-init-page p {
+  color: var(--color-muted);
+  margin-top: 0.5rem;
+}
+
+.payment-init-form {
+  margin-top: var(--space-5);
+}

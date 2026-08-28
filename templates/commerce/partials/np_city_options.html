@@ -1,0 +1,5 @@
+{% for city in cities %}
+  <button type="button" data-np-select="city" data-np-id="{{ city.id }}" data-np-label="{{ city.name }}, {{ city.area }}">
+    {{ city.name }}, {{ city.area }}
+  </button>
+{% endfor %}

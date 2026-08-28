@@ -1,0 +1,5 @@
+{% for warehouse in warehouses %}
+  <button type="button" data-np-select="warehouse" data-np-id="{{ warehouse.id }}" data-np-label="{{ warehouse.number }} — {{ warehouse.description }}">
+    {{ warehouse.number }} — {{ warehouse.description }}
+  </button>
+{% endfor %}

@@ -1,0 +1,140 @@
+/* Header dropdown (8 категорій) + пошук — понад статичний макет (sitemap-lock, ТЗ §3). */
+
+.nav-desktop {
+  position: relative;
+}
+
+.nav-item-dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.dropdown-toggle svg {
+  transition: transform 0.2s var(--ease);
+}
+
+.nav-item-dropdown.is-open .dropdown-toggle svg {
+  transform: rotate(180deg);
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  min-width: 16rem;
+  padding: 0.5rem;
+  display: none;
+  grid-template-columns: 1fr;
+  gap: 0.15rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  z-index: 45;
+}
+
+.nav-item-dropdown.is-open .dropdown-panel {
+  display: grid;
+}
+
+.dropdown-panel a {
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-navy);
+  font-size: 0.9rem;
+}
+
+.dropdown-panel a:hover {
+  background: var(--color-cyan-mist);
+  color: var(--color-cyan);
+}
+
+.header-search {
+  position: relative;
+  display: none;
+}
+
+.header-search input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.85rem 0.5rem 2.2rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-snow);
+  font-size: 0.9rem;
+}
+
+.header-search input:focus {
+  border-color: var(--color-cyan);
+  outline: none;
+  background: var(--color-white);
+}
+
+.header-search svg {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+  pointer-events: none;
+}
+
+.mobile-search {
+  padding: var(--space-3) 0;
+}
+
+.mobile-search .header-search {
+  display: block;
+  width: 100%;
+  margin-left: 0;
+}
+
+.mobile-nav-categories {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-snow);
+}
+
+.mobile-nav .mobile-nav-categories a {
+  padding: 0.6rem 0.5rem;
+  font-size: 0.9rem;
+  border-bottom: none;
+}
+
+/* Пошук у шапці разом із desktop-nav (≥1024). Нижче — лише в mobile-nav. */
+@media (min-width: 1024px) {
+  .header-search {
+    display: block;
+    width: 9.5rem;
+    flex-shrink: 1;
+    min-width: 6.5rem;
+    margin-left: 0.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .header-search {
+    width: 14rem;
+    min-width: 10rem;
+    margin-left: 0.75rem;
+  }
+}
+
+@media (min-width: 1400px) {
+  .header-search {
+    width: 18rem;
+  }
+}

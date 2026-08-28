@@ -1,0 +1,75 @@
+.content-page {
+  padding-bottom: var(--space-7);
+}
+
+.content-page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  color: var(--color-navy);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-4);
+}
+
+.content-page-body {
+  max-width: 42rem;
+  color: var(--color-navy-mid);
+  line-height: 1.65;
+}
+
+.content-page-body p {
+  margin-bottom: 1rem;
+}
+
+.contacts-grid {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.contacts-card {
+  padding: var(--space-5);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.contacts-info-list {
+  display: grid;
+  gap: 1.5rem;
+  margin: 0;
+  color: var(--color-navy-mid);
+  align-content: start;
+  align-self: start;
+  grid-auto-rows: min-content;
+}
+
+.contacts-info-item {
+  display: grid;
+  gap: 0;
+  grid-auto-rows: min-content;
+}
+
+.contacts-info-item dt {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-navy);
+  line-height: 2;
+}
+
+.contacts-info-item dd {
+  margin: 0;
+  line-height: 1.25;
+}
+
+.contacts-info-item a {
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 900px) {
+  .contacts-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

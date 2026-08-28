@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Оформлення замовлення — Арктика</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/checkout.css">
+</head>
+<body>
+  <header class="site-header" data-header>
+    <div class="container header-inner">
+      <a class="logo" href="index.html" aria-label="Арктика — на головну">
+        <img src="assets/logo-footer.png" alt="Арктика РК">
+      </a>
+      <nav class="nav-desktop" aria-label="Основна навігація">
+        <a href="catalog.html">Каталог</a>
+        <a href="index.html#about">Про нас</a>
+        <a href="#delivery">Доставка і оплата</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-switch" aria-label="Мова">
+          <a class="is-active" href="#" hreflang="uk">UA</a>
+          <a href="#" hreflang="ru">RU</a>
+        </div>
+        <button class="icon-btn" type="button" data-cart-open aria-label="Відкрити кошик">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 7h14l-1.5 9h-11L7 7Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M7 7 6 3H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="10" cy="20" r="1.3" fill="currentColor"/>
+            <circle cx="17" cy="20" r="1.3" fill="currentColor"/>
+          </svg>
+          <span class="cart-count">2</span>
+        </button>
+        <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Меню">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-nav" data-mobile-nav aria-label="Мобільна навігація">
+      <a href="index.html">Головна</a>
+      <a href="catalog.html">Каталог</a>
+      <a href="index.html#about">Про нас</a>
+      <a href="#delivery">Доставка і оплата</a>
+      <a href="tel:+380000000000">+38 (000) 000-00-00</a>
+    </nav>
+  </header>
+
+  <main class="container checkout">
+    <nav class="breadcrumbs" aria-label="Хлібні крихти">
+      <a href="index.html">Головна</a>
+      <span>/</span>
+      <a href="#">Кошик</a>
+      <span>/</span>
+      <span aria-current="page">Оформлення</span>
+    </nav>
+
+    <h1>Оформлення замовлення</h1>
+    <p class="checkout-note">Мінімальна сума замовлення — 500 грн. Доставка Новою Поштою за тарифами перевізника. Оплата карткою через WayForPay.</p>
+
+    <form class="checkout-grid" action="#" method="post">
+      <div class="checkout-main">
+        <section class="checkout-card">
+          <h2>Контактні дані</h2>
+          <div class="field-grid two">
+            <div class="field">
+              <label for="name">Імʼя та прізвище</label>
+              <input id="name" name="name" autocomplete="name" required placeholder="Олена Коваленко">
+            </div>
+            <div class="field">
+              <label for="phone">Телефон</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="+380">
+            </div>
+            <div class="field" style="grid-column: 1 / -1;">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="email@example.com">
+            </div>
+          </div>
+        </section>
+
+        <section class="checkout-card">
+          <h2>Доставка</h2>
+          <div class="ship-option is-active">
+            <input type="radio" name="ship" checked aria-label="Нова Пошта">
+            <div>
+              <strong>Нова Пошта</strong>
+              <span>Відділення або поштомат. Вартість — за тарифами НП.</span>
+            </div>
+          </div>
+          <div class="field-grid two" style="margin-top: 1rem;">
+            <div class="field">
+              <label for="city">Місто</label>
+              <select id="city" name="city" required>
+                <option value="">Оберіть місто</option>
+                <option>Київ</option>
+                <option>Львів</option>
+                <option>Одеса</option>
+                <option>Дніпро</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="warehouse">Відділення</label>
+              <select id="warehouse" name="warehouse" required>
+                <option value="">Оберіть відділення</option>
+                <option>Відділення №1</option>
+                <option>Відділення №12</option>
+                <option>Поштомат №3401</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="checkout-card">
+          <h2>Оплата</h2>
+          <div class="pay-option is-active">
+            <input type="radio" name="pay" checked aria-label="WayForPay">
+            <div>
+              <strong>Онлайн карткою (WayForPay)</strong>
+              <span>Після підтвердження ви перейдете на захищену сторінку оплати.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="checkout-card checkout-summary">
+        <h2>Ваше замовлення</h2>
+        <div class="summary-list">
+          <div class="summary-item">
+            <div>
+              <strong>Скумбрія х/к</strong>
+              <span>500 г × 1</span>
+            </div>
+            <div class="price">289 ₴</div>
+          </div>
+          <div class="summary-item">
+            <div>
+              <strong>Ікра мойви</strong>
+              <span>180 г × 2</span>
+            </div>
+            <div class="price">312 ₴</div>
+          </div>
+        </div>
+        <div class="summary-totals">
+          <div>
+            <span>Товари</span>
+            <span>601 ₴</span>
+          </div>
+          <div>
+            <span>Доставка</span>
+            <span>за тарифами НП</span>
+          </div>
+          <div class="vat-line">
+            <span>в т.ч. ПДВ</span>
+            <span>100,17 ₴</span>
+          </div>
+          <div class="grand">
+            <span>До сплати</span>
+            <span>601 ₴</span>
+          </div>
+        </div>
+        <label class="check-row">
+          <input type="checkbox" required>
+          <span>Погоджуюсь з <a href="#">офертою</a> та <a href="#">політикою конфіденційності</a></span>
+        </label>
+        <button class="btn btn-primary" type="submit">Сплатити 601 ₴</button>
+      </aside>
+    </form>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-brand-row">
+            <img src="assets/logo-fish.png" alt="">
+            <strong>Арктика</strong>
+          </div>
+          <p>Оформлення без реєстрації. Сповіщення менеджеру в Telegram.</p>
+        </div>
+        <div class="footer-nav">
+          <a href="index.html#about">Про нас</a>
+          <a href="#delivery">Доставка і оплата</a>
+          <a href="#">Контакти</a>
+        </div>
+        <div class="footer-nav">
+          <a href="#">Оферта</a>
+          <a href="#">Політика конфіденційності</a>
+          <a href="catalog.html">Каталог</a>
+        </div>
+      </div>
+      <div class="footer-meta">© 2026 Арктика</div>
+    </div>
+  </footer>
+
+  <div class="cart-drawer" data-cart aria-hidden="true">
+    <div class="cart-backdrop" data-cart-close></div>
+    <aside class="cart-panel" role="dialog" aria-label="Кошик">
+      <button class="cart-close" type="button" data-cart-close aria-label="Закрити">×</button>
+      <h2>Кошик</h2>
+      <div class="cart-items">
+        <div class="cart-item">
+          <div class="cart-item-thumb" aria-hidden="true"></div>
+          <div>
+            <strong>Скумбрія х/к</strong>
+            <span>500 г · 1 шт</span>
+          </div>
+          <div class="price">289 ₴</div>
+        </div>
+      </div>
+      <div class="cart-actions">
+        <button class="btn btn-ghost" type="button" data-cart-close>Продовжити</button>
+      </div>
+    </aside>
+  </div>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>

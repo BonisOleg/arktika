@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/cart-page.css' %}?v=20260828f">
+{% endblock %}
+
+{% block content %}
+<div class="container cart-page">
+  <nav class="breadcrumbs" aria-label="{% trans 'Хлібні крихти' %}">
+    <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
+    <span>/</span>
+    <span aria-current="page">{% trans "Кошик" %}</span>
+  </nav>
+  <h1>{% trans "Кошик" %}</h1>
+  {% include "commerce/partials/cart_page_items.html" %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/cart.js' %}?v=20260827i" defer></script>
+{% endblock %}

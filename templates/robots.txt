@@ -1,0 +1,7 @@
+{% load i18n %}User-agent: *
+Disallow: {% url 'admin:index' %}
+Disallow: {% url 'commerce:checkout' %}
+Disallow: {% url 'commerce:cart' %}
+Disallow: /order/
+
+Sitemap: {{ request.scheme }}://{{ request.get_host }}/sitemap.xml

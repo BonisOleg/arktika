@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260828d">
+{% endblock %}
+
+{% block title %}{% if active_category %}{{ active_category.seo_title|default:active_category.name }}{% else %}{{ page_title }}{% endif %} — Арктика{% endblock %}
+{% block meta_description %}{% if active_category and active_category.seo_description %}{{ active_category.seo_description }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/catalog.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="{% trans 'Хлібні крихти' %}">
+    <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
+    <span>/</span>
+    {% if active_category or active_tag %}
+      <a href="{% url 'catalog:list' %}">{% trans "Каталог" %}</a>
+      <span>/</span>
+      <span aria-current="page">{% if active_category %}{{ active_category.name }}{% else %}{{ page_title }}{% endif %}</span>
+    {% else %}
+      <span aria-current="page">{% trans "Каталог" %}</span>
+    {% endif %}
+  </nav>
+
+  <div class="catalog-layout">
+    <aside class="catalog-toolbar" aria-label="{% trans 'Фільтри' %}">
+      <h1>{% if active_tag %}{{ page_title }}{% elif active_category %}{{ active_category.seo_h1|default:active_category.name }}{% else %}{{ page_title }}{% endif %}</h1>
+      <div class="filters" role="list" data-qa="filter-form">
+        <a class="filter-chip{% if not active_category and not active_tag %} is-active{% endif %}" href="{% url 'catalog:list' %}">{% trans "Усі" %}</a>
+        <a class="filter-chip{% if active_tag == 'hits' and not active_category %} is-active{% endif %}" href="{% url 'catalog:list' %}?tag=hits">{% trans "Хіти" %}</a>
+        <a class="filter-chip{% if active_tag == 'new' and not active_category %} is-active{% endif %}" href="{% url 'catalog:list' %}?tag=new">{% trans "Новинки" %}</a>
+        {% for category in categories %}
+          <a class="filter-chip{% if active_category.slug == category.slug %} is-active{% endif %}" href="{{ category.get_absolute_url }}{% if active_tag %}?tag={{ active_tag }}{% endif %}">{{ category.name }}</a>
+        {% endfor %}
+      </div>
+    </aside>
+
+    <section>
+      <div class="sort-row">
+        <span>{% blocktrans count counter=paginator.count %}Показано {{ counter }} товар{% plural %}Показано {{ counter }} товарів{% endblocktrans %}</span>
+        <label>
+          {% trans "Сортування" %}
+          <select name="sort" data-sort-navigate>
+            {% for value, label in sort_choices %}
+              <option value="?{{ query_string }}sort={{ value }}" {% if value == current_sort %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      {% if products %}
+          <div class="catalog-grid" data-qa="product-grid">
+          {% for product in products %}
+            {% include "catalog/partials/catalog_card.html" %}
+          {% endfor %}
+        </div>
+        {% include "partials/pagination.html" %}
+      {% else %}
+        <div class="empty-state">
+          <h2>{% trans "Товарів не знайдено" %}</h2>
+          <p>{% trans "Спробуйте іншу категорію." %}</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

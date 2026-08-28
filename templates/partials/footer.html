@@ -1,0 +1,34 @@
+{% load i18n static %}
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-row">
+          <img src="{% static 'images/logo-fish.png' %}" alt="">
+          <strong>Арктика</strong>
+        </div>
+        <p>{{ site_settings.footer_blurb }}</p>
+      </div>
+      <div class="footer-nav">
+        <a href="{% url 'content:about' %}">{% trans "Про нас" %}</a>
+        <a href="{% url 'content:delivery' %}">{% trans "Доставка і оплата" %}</a>
+        <a href="{% url 'content:contacts' %}">{% trans "Контакти" %}</a>
+      </div>
+      <div class="footer-nav">
+        <a href="{% url 'content:offer' %}">{% trans "Оферта" %}</a>
+        <a href="{% url 'content:privacy' %}">{% trans "Політика конфіденційності" %}</a>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <p class="footer-copy">© {% now "Y" %} Арктика</p>
+      <p class="footer-credit">
+        {% trans "Сайт розроблено в студії" %}
+        {% if request.resolver_match.url_name == "home" %}
+          <a class="footer-credit-link" href="https://www.prometeylabs.com/internet-shop-v2/" target="_blank" rel="nofollow noopener noreferrer">Prometey<span class="footer-credit-accent">Labs</span></a>
+        {% else %}
+          <span class="footer-credit-name">Prometey<span class="footer-credit-accent">Labs</span></span>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+</footer>

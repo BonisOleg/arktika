@@ -1,0 +1,329 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  color: var(--color-white);
+  background: var(--color-navy-deep);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 0;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(56, 168, 216, 0.28), transparent 55%),
+    linear-gradient(160deg, #0a1a30 0%, #102848 52%, #183858 100%);
+  padding:
+    var(--space-6)
+    max(1.25rem, var(--safe-right))
+    var(--space-6)
+    max(1.25rem, var(--safe-left));
+}
+
+.hero-copy-inner {
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+  display: grid;
+  gap: var(--space-3);
+  align-content: center;
+}
+
+.hero-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.15rem;
+}
+
+.hero-brand img {
+  height: 1.85rem;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
+.hero-brand span {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 3.2vw, 1.45rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero h1 {
+  font-family: var(--font-hero);
+  font-size: clamp(2.05rem, 7.2vw, 3.55rem);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  max-width: 11ch;
+  text-wrap: balance;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: rise 0.8s var(--ease) 0.15s forwards;
+}
+
+.hero-title-line {
+  display: block;
+}
+
+.hero-title-line + .hero-title-line {
+  margin-top: 0.06em;
+}
+
+.hero-copy p {
+  max-width: 26ch;
+  margin-top: 0.35rem;
+  font-size: clamp(0.95rem, 2.1vw, 1.05rem);
+  line-height: 1.45;
+  letter-spacing: 0.005em;
+  color: rgba(255, 255, 255, 0.72);
+  opacity: 0;
+  transform: translateY(12px);
+  animation: rise 0.8s var(--ease) 0.28s forwards;
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: 0.55rem;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: rise 0.8s var(--ease) 0.4s forwards;
+}
+
+.btn-on-dark {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--color-white);
+  background: transparent;
+}
+
+.btn-on-dark:hover {
+  border-color: var(--color-white);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-visual {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  min-height: 12.5rem;
+  background: #eef3f7;
+  overflow: hidden;
+}
+
+.hero-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.02);
+  animation: hero-drift 14s var(--ease) infinite alternate;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+.product-tile {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.product-tile-media {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-snow);
+  border: 1px solid var(--color-line);
+  transition: transform 0.45s var(--ease);
+}
+
+.product-tile-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-tile:hover .product-tile-media {
+  transform: scale(1.015);
+}
+
+.product-tile h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--color-navy);
+}
+
+.product-tile-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.product-tile-meta .price-with-vat {
+  align-items: start;
+}
+
+.trust-strip {
+  background: var(--color-snow);
+  border-block: 1px solid var(--color-line);
+}
+
+.trust-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.trust-list li {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.trust-list strong {
+  font-family: var(--font-display);
+  color: var(--color-navy);
+}
+
+.trust-list span {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-drift {
+  from {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.05) translate3d(-1.2%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero h1,
+  .hero-copy p,
+  .hero-cta,
+  .hero-visual img {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .trust-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hero-copy {
+    padding-inline: max(1.75rem, var(--safe-right), var(--safe-left));
+  }
+
+  .hero-visual {
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    min-height: calc(100svh - var(--header-h));
+    min-height: calc(100dvh - var(--header-h));
+    min-height: calc(-webkit-fill-available - var(--header-h));
+  }
+
+  .hero-copy {
+    padding: var(--space-6) var(--space-5);
+    align-items: center;
+  }
+
+  .hero-copy-inner {
+    margin: 0;
+  }
+
+  .hero-visual {
+    aspect-ratio: auto;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .hero-visual img {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  }
+
+  .hero-copy {
+    padding:
+      var(--space-8)
+      var(--space-7)
+      calc(var(--space-8) + var(--safe-bottom))
+      max(2rem, calc((100vw - var(--container)) / 2 + 1.25rem));
+  }
+
+  .hero-copy-inner {
+    margin: 0;
+    max-width: 28rem;
+  }
+
+  .hero-brand img {
+    height: 2.05rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.35rem, 3.6vw, 3.55rem);
+    max-width: 10.5ch;
+  }
+
+  .hero-visual img {
+    position: absolute;
+    inset: 0;
+    object-position: center;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .hero-grid {
+    min-height: calc(100svh - var(--header-h));
+  }
+
+  .hero-visual img {
+    -webkit-transform: translateZ(0);
+  }
+}

@@ -1,0 +1,11 @@
+services:
+  nginx:
+    restart: always
+  backend:
+    restart: always
+    env_file:
+      - .env
+  db:
+    restart: always
+    env_file:
+      - .env

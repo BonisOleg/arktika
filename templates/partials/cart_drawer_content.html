@@ -1,0 +1,62 @@
+{% load i18n %}
+{% include "partials/cart_count_oob.html" with count=items|length %}
+{% if items %}
+  <div class="cart-drawer-body">
+    <div class="cart-items">
+      {% for item in items %}
+        <div class="cart-item" data-qty-wrapper>
+          <div class="cart-item-thumb" aria-hidden="true">
+            {% with photo=item.product.images.first %}
+              {% if photo %}<img src="{{ photo.image.url }}" alt="">{% endif %}
+            {% endwith %}
+          </div>
+          <div class="cart-item-info">
+            <strong>{{ item.product.name }}</strong>
+            {% if item.weight_option.is_weighted %}
+              <span>{{ item.quantity_display }} × {{ item.weight_option.price }} ₴/{{ item.weight_option.get_unit_display }}</span>
+            {% else %}
+              <span>{{ item.weight_option.label }} · {{ item.quantity_display }}</span>
+            {% endif %}
+          </div>
+          <div class="cart-item-side">
+            <div class="price">{{ item.line_total }} ₴</div>
+            <button type="button" class="cart-item-remove"
+                    hx-post="{% url 'commerce:cart_item_remove' item.id %}"
+                    hx-target="#cart-drawer-content"
+                    hx-swap="innerHTML"
+                    hx-vals='{"render": "drawer"}'
+                    data-qa="cart-drawer-remove">
+              {% trans "Видалити" %}
+            </button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="cart-drawer-footer">
+      <div class="cart-total">
+        <span>{% trans "Разом" %}</span>
+        <strong class="price">{{ subtotal }} ₴</strong>
+      </div>
+      {% if subtotal < min_order_amount %}
+        <p class="min-order-hint is-blocked">{% blocktrans %}Мінімальна сума замовлення {{ min_order_amount }} ₴{% endblocktrans %}</p>
+        <div class="cart-actions">
+          <a class="btn btn-ghost" href="{% url 'commerce:cart' %}" data-qa="cart-page">{% trans "Відкрити кошик" %}</a>
+          <a class="btn btn-primary" href="{% url 'catalog:list' %}" data-qa="cart-to-catalog">{% trans "До каталогу" %}</a>
+        </div>
+      {% else %}
+        <div class="cart-actions">
+          <a class="btn btn-ghost" href="{% url 'commerce:cart' %}" data-qa="cart-page">{% trans "Відкрити кошик" %}</a>
+          <a class="btn btn-primary" href="{% url 'commerce:checkout' %}" data-qa="checkout-cta">{% trans "Оформити" %}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <p>{% trans "Кошик порожній" %}</p>
+    <div class="cart-actions">
+      <a class="btn btn-ghost" href="{% url 'commerce:cart' %}" data-qa="cart-page">{% trans "Відкрити кошик" %}</a>
+      <a class="btn btn-primary" href="{% url 'catalog:list' %}">{% trans "До каталогу" %}</a>
+    </div>
+  </div>
+{% endif %}

@@ -1,0 +1,11 @@
+{% load i18n %}
+<div class="cart-drawer" data-cart aria-hidden="true">
+  <div class="cart-backdrop" data-cart-close></div>
+  <aside class="cart-panel" role="dialog" aria-label="{% trans 'Кошик' %}">
+    <button class="cart-close" type="button" data-cart-close aria-label="{% trans 'Закрити' %}">×</button>
+    <h2>{% trans "Кошик" %}</h2>
+    <div id="cart-drawer-content" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+      {# Контент підвантажується лише при відкритті кошика або після «До кошика» (main.js / hx-target). #}
+    </div>
+  </aside>
+</div>

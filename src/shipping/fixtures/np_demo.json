@@ -1,0 +1,83 @@
+[
+  {
+    "model": "shipping.npcity",
+    "pk": 1,
+    "fields": {
+      "ref": "db5c88f5-391c-11dd-90d9-001a92567626",
+      "name": "Київ",
+      "area": "Київська область",
+      "is_active": true,
+      "synced_at": null
+    }
+  },
+  {
+    "model": "shipping.npcity",
+    "pk": 2,
+    "fields": {
+      "ref": "db5c88e0-391c-11dd-90d9-001a92567626",
+      "name": "Львів",
+      "area": "Львівська область",
+      "is_active": true,
+      "synced_at": null
+    }
+  },
+  {
+    "model": "shipping.npcity",
+    "pk": 3,
+    "fields": {
+      "ref": "db5c88de-391c-11dd-90d9-001a92567626",
+      "name": "Одеса",
+      "area": "Одеська область",
+      "is_active": true,
+      "synced_at": null
+    }
+  },
+  {
+    "model": "shipping.npwarehouse",
+    "pk": 1,
+    "fields": {
+      "city": 1,
+      "ref": "0006abd6-3d76-11e5-96de-005056887b8d",
+      "number": "Відділення №1",
+      "description": "вул. Хрещатик, 1",
+      "is_active": true,
+      "synced_at": null
+    }
+  },
+  {
+    "model": "shipping.npwarehouse",
+    "pk": 2,
+    "fields": {
+      "city": 1,
+      "ref": "0006abd6-3d76-11e5-96de-005056887b8e",
+      "number": "Поштомат №3401",
+      "description": "вул. Велика Васильківська, 15",
+      "is_active": true,
+      "synced_at": null
+    }
+  },
+  {
+    "model": "shipping.npwarehouse",
+    "pk": 3,
+    "fields": {
+      "city": 2,
+      "ref": "0006abd6-3d76-11e5-96de-005056887b8f",
+      "number": "Відділення №5",
+      "description": "просп. Свободи, 10",
+      "is_active": true,
+      "synced_at": null
+    }
+  },
+  {
+    "model": "shipping.npwarehouse",
+    "pk": 4,
+    "fields": {
+      "city": 3,
+      "ref": "0006abd6-3d76-11e5-96de-005056887b90",
+      "number": "Відділення №2",
+      "description": "Дерибасівська вул., 5",
+      "is_active": true,
+      "synced_at": null
+    }
+  }
+]

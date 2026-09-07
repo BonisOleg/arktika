@@ -15,11 +15,9 @@ from src.content.models import SiteSettings
 
 from .exceptions import EmptyCartError, MinOrderNotReachedError, ProductUnavailableError
 from .models import Cart, CartItem, Order, OrderItem, OrderStatusLog, Payment
+from .utils import vat_from_gross
 
 logger = logging.getLogger("src.commerce")
-
-VAT_RATE = Decimal("0.20")  # інформаційний розріз «в т.ч. ПДВ» — ціни вже включають ПДВ
-
 
 def get_or_create_cart(session_key: str) -> Cart:
     cart, _ = Cart.objects.get_or_create(session_key=session_key, status="active")
@@ -109,7 +107,7 @@ def place_order(*, session_key: str, cart: Cart, customer_data: dict) -> Order:
     if subtotal < min_order:
         raise MinOrderNotReachedError(min_order, subtotal)
 
-    vat_amount = (subtotal * VAT_RATE / (1 + VAT_RATE)).quantize(Decimal("0.01"))
+    vat_amount = vat_from_gross(subtotal)
 
     order = Order.objects.create(
         order_number=_generate_order_number(),
@@ -152,6 +150,56 @@ def place_order(*, session_key: str, cart: Cart, customer_data: dict) -> Order:
 
     _notify_new_order(order)
     return order
+
+
+def prepare_payment_attempt(order: Order) -> Payment:
+    """Новий orderReference на кожну спробу оплати (WFP 1112 Duplicate Order ID).
+
+    Номер замовлення для клієнта (`order_number`) не змінюється.
+    """
+    payment = getattr(order, "payment", None)
+    if payment is None:
+        payment = Payment.objects.create(
+            order=order,
+            order_reference=order.order_number,
+            amount=order.total_amount,
+        )
+
+    if order.payment_status == "paid":
+        return payment
+
+    new_ref = f"{order.order_number}-{secrets.token_hex(3)}"
+    while Payment.objects.filter(order_reference=new_ref).exists():
+        new_ref = f"{order.order_number}-{secrets.token_hex(3)}"
+
+    payment.order_reference = new_ref
+    payment.amount = order.total_amount
+    payment.transaction_status = None
+    payment.signature_verified = False
+    payment.raw_callback = None
+    payment.paid_at = None
+    payment.save(
+        update_fields=[
+            "order_reference",
+            "amount",
+            "transaction_status",
+            "signature_verified",
+            "raw_callback",
+            "paid_at",
+            "updated_at",
+        ]
+    )
+
+    if order.payment_status != "pending":
+        order.payment_status = "pending"
+        order.save(update_fields=["payment_status", "updated_at"])
+        OrderStatusLog.objects.create(
+            order=order,
+            status="payment_retry",
+            note=f"Нова спроба оплати, ref={new_ref}",
+        )
+
+    return payment
 
 
 def _notify_new_order(order: Order) -> None:

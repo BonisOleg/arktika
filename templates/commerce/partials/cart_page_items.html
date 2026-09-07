@@ -14,9 +14,9 @@
             <div class="cart-page-item-info">
               <strong>{{ item.product.name }}</strong>
               {% if item.weight_option.is_weighted %}
-                <span>{{ item.weight_option.price }} ₴/{{ item.weight_option.get_unit_display }}</span>
+                <span>{{ item.weight_option.price }} грн/{{ item.weight_option.get_unit_display }}</span>
               {% else %}
-                <span>{{ item.weight_option.label }} · {{ item.weight_option.price }} ₴</span>
+                <span>{{ item.weight_option.label }} · {{ item.weight_option.price }} грн</span>
               {% endif %}
             </div>
             <div class="cart-page-item-controls">
@@ -39,10 +39,10 @@
       <div class="cart-page-summary">
         <h2>{% trans "Разом" %}</h2>
         <div class="summary-totals">
-          <div><span>{% trans "Сума товарів" %}</span><strong>{{ subtotal }} ₴</strong></div>
+          <div><span>{% trans "Сума товарів" %}</span><strong>{{ subtotal }} грн</strong></div>
         </div>
         {% if subtotal < min_order_amount %}
-          <p class="min-order-hint is-blocked">{% blocktrans %}Мінімальна сума замовлення {{ min_order_amount }} ₴. Додайте ще товарів.{% endblocktrans %}</p>
+          <p class="min-order-hint is-blocked">{% blocktrans %}Мінімальна сума замовлення {{ min_order_amount }} грн. Додайте ще товарів.{% endblocktrans %}</p>
         {% else %}
           <a class="btn btn-primary" href="{% url 'commerce:checkout' %}" data-qa="checkout-cta">{% trans "Оформити замовлення" %}</a>
         {% endif %}

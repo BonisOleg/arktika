@@ -17,7 +17,7 @@ from src.shipping import services as np_services
 from . import selectors, services
 from .exceptions import CartError
 from .forms import CheckoutForm
-from .models import Order
+from .models import Order, Payment
 from .services_wayforpay import apply_wayforpay_result, get_wayforpay_service
 from .utils import get_or_create_session_key, parse_quantity
 
@@ -211,11 +211,12 @@ class PaymentInitView(TemplateView):
             messages.info(request, _("Онлайн-оплата тимчасово недоступна — менеджер зв'яжеться для оплати при отриманні."))
             return redirect("commerce:order_success", order_id=order.id)
 
+        payment = services.prepare_payment_attempt(order)
         items = list(order.items.all())
         # WayForPay відхиляє дробовий productCount (кг) з 1113 Invalid signature.
         # Одна позиція = count 1 + ціна = line_total; кількість у назві для чека.
         form_data = service.build_purchase_form(
-            order_reference=order.order_number,
+            order_reference=payment.order_reference,
             order_date=int(order.created_at.timestamp()),
             amount=str(order.total_amount),
             currency="UAH",
@@ -255,15 +256,25 @@ class PaymentReturnView(View):
         order = Order.objects.filter(pk=order_id).first()
         ref = payload.get("orderReference") or ""
         if ref:
-            by_ref = Order.objects.filter(order_number=ref).first()
-            if by_ref is not None:
-                order = by_ref
+            by_payment = (
+                Payment.objects.filter(order_reference=ref).select_related("order").first()
+            )
+            if by_payment is not None:
+                order = by_payment.order
+            else:
+                # fallback: старі спроби, де ref == order_number
+                by_ref = Order.objects.filter(order_number=ref).first()
+                if by_ref is not None:
+                    order = by_ref
         if order is None:
             messages.info(request, _("Замовлення не знайдено."))
             return redirect("core:home")
 
         owns_session = order.session_key == session_key
-        ref_matches = bool(ref) and ref == order.order_number and order.id == order_id
+        ref_matches = bool(ref) and (
+            Payment.objects.filter(order_reference=ref, order_id=order_id).exists()
+            or (ref == order.order_number and order.id == order_id)
+        )
 
         service = get_wayforpay_service()
         signature_ok = False

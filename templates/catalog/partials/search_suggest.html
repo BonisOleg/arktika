@@ -1,0 +1,14 @@
+{% load i18n %}
+{% for product in products %}
+  <a href="{{ product.get_absolute_url }}"
+     class="search-suggest-item"
+     role="option"
+     data-qa="search-suggest-item">
+    <span class="search-suggest-name">{{ product.name }}</span>
+    <span class="search-suggest-cat">{{ product.category.name }}</span>
+  </a>
+{% empty %}
+  {% if query|length >= 2 %}
+    <p class="search-suggest-empty">{% trans "Нічого не знайдено" %}</p>
+  {% endif %}
+{% endfor %}

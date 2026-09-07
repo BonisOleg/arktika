@@ -63,7 +63,7 @@
           </div>
           <h3>{{ product.name }}</h3>
           <div class="product-tile-meta">
-            <div class="price-with-vat"><span class="price">{{ product.min_price }} ₴<span class="price-unit">/{{ product.default_option.get_unit_display }}</span></span><span class="price-vat">{% trans "з ПДВ" %}</span></div>
+            <div class="price-with-vat"><span class="price">{{ product.min_price }} грн<span class="price-unit">/{{ product.default_option.get_unit_display }}</span></span><span class="price-vat">{% trans "з ПДВ" %}</span></div>
             {% if product.is_available %}<span class="badge badge-ok">{% trans "В наявності" %}</span>{% endif %}
           </div>
         </a>
@@ -93,7 +93,7 @@
           </div>
           <h3>{{ product.name }}</h3>
           <div class="product-tile-meta">
-            <div class="price-with-vat"><span class="price">{{ product.min_price }} ₴<span class="price-unit">/{{ product.default_option.get_unit_display }}</span></span><span class="price-vat">{% trans "з ПДВ" %}</span></div>
+            <div class="price-with-vat"><span class="price">{{ product.min_price }} грн<span class="price-unit">/{{ product.default_option.get_unit_display }}</span></span><span class="price-vat">{% trans "з ПДВ" %}</span></div>
             <span class="badge">{% trans "Новинка" %}</span>
           </div>
         </a>

@@ -24,8 +24,8 @@ CATEGORIES = [
 
 # Фото з mockup/assets/products → static/images/products (канон макету).
 # options: (label, unit, price, sku, is_default, min_quantity, approx_unit_weight)
-#   unit="kg"  → ваговий товар: price = ₴/кг, покупець обирає вагу (крок 0.1 кг, мін. min_quantity кг).
-#   unit=інше  → штучний товар: price = ₴/1 одиницю (шт/пач/уп/ящик), кількість цілими (мін. min_quantity шт).
+#   unit="kg"  → ваговий товар: price = грн/кг, покупець обирає вагу (крок 0.1 кг, мін. min_quantity кг).
+#   unit=інше  → штучний товар: price = грн/1 одиницю (шт/пач/уп/ящик), кількість цілими (мін. min_quantity шт).
 #   approx_unit_weight — довідкова вага 1 риби/штуки для вагових позицій (порожньо — підказка не показується).
 PRODUCTS = [
     {

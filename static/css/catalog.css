@@ -6,7 +6,7 @@
 
 .catalog-toolbar {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .catalog-toolbar h1 {
@@ -16,7 +16,27 @@
   letter-spacing: -0.02em;
 }
 
-.filters {
+.catalog-filter-block {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.catalog-filter-block--categories {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+}
+
+.catalog-group-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.filters,
+.collection-chips {
   display: flex;
   gap: 0.5rem;
   overflow-x: auto;
@@ -25,7 +45,8 @@
   scrollbar-width: none;
 }
 
-.filters::-webkit-scrollbar {
+.filters::-webkit-scrollbar,
+.collection-chips::-webkit-scrollbar {
   display: none;
 }
 
@@ -45,6 +66,14 @@
   background: var(--color-navy);
   border-color: var(--color-navy);
   color: var(--color-white);
+}
+
+.filter-chip--collection {
+  border-style: dashed;
+}
+
+.filter-chip--collection.is-active {
+  border-style: solid;
 }
 
 .sort-row {
@@ -132,12 +161,13 @@
     align-items: start;
   }
 
-  .filters {
+  .filters,
+  .collection-chips {
     flex-direction: column;
     overflow: visible;
   }
 
-  .filter-chip {
+  .catalog-toolbar .filter-chip {
     width: 100%;
     border-radius: var(--radius-sm);
     justify-content: flex-start;
@@ -148,7 +178,6 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
-
 
 .catalog-card-meta .price-with-vat {
   align-items: baseline;

@@ -46,7 +46,7 @@ class ProductAdmin(TabbedTranslationAdmin, ModelAdmin):
     @admin.display(description="Ціна від")
     def default_price(self, obj: Product):
         option = obj.default_option
-        return f"{option.price} ₴/{option.get_unit_display()}" if option else "—"
+        return f"{option.price} грн/{option.get_unit_display()}" if option else "—"
 
     @admin.display(description="Тип")
     def sale_mode(self, obj: Product):

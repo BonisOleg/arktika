@@ -1,7 +1,10 @@
 """Selectors — читання кошика/замовлень. Мутації — лише в services.py."""
+from decimal import Decimal
+
 from django.db.models import QuerySet
 
 from .models import Cart, Order
+from .utils import vat_from_gross
 
 
 def get_active_cart(session_key: str) -> Cart | None:
@@ -23,8 +26,12 @@ def get_cart_items_count(session_key: str) -> int:
 
 def get_cart_totals(cart: Cart) -> dict:
     items = list(cart.items.select_related("weight_option", "product").all())
-    subtotal = sum((item.line_total for item in items), start=0)
-    return {"items": items, "subtotal": subtotal}
+    subtotal = sum((item.line_total for item in items), start=Decimal("0"))
+    return {
+        "items": items,
+        "subtotal": subtotal,
+        "vat_amount": vat_from_gross(subtotal),
+    }
 
 
 def get_order_for_guest(order_id: int, session_key: str) -> Order | None:

@@ -79,7 +79,7 @@
     if (qtyOut) qtyOut.textContent = displayValue;
     if (qtyInput) qtyInput.value = String(qty);
     if (qtyInputBuyNow) qtyInputBuyNow.value = String(qty);
-    if (lineTotalEl) lineTotalEl.textContent = `${(qty * variant.price).toFixed(2)} ₴`;
+    if (lineTotalEl) lineTotalEl.textContent = `${(qty * variant.price).toFixed(2)} грн`;
     if (qtyHint) {
       const minText = variant.unit === "kg" ? formatWeight(variant.min) : formatPieces(variant.min, variant.unitLabel);
       const stepText = variant.unit === "kg" ? formatWeight(variant.step) : formatPieces(variant.step, variant.unitLabel);

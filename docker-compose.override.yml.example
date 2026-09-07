@@ -1,4 +1,6 @@
 services:
+  # ЛОКАЛЬНО: cp docker-compose.override.yml.example docker-compose.override.yml
+  # На Droplet цей файл НЕ має існувати як override.yml — інакше runserver+develop.
   backend:
     command: python manage.py runserver 0.0.0.0:8000
     env_file:

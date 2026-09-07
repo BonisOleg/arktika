@@ -24,13 +24,19 @@
       <a href="{% url 'content:delivery' %}">{% trans "Доставка і оплата" %}</a>
       <a href="{% url 'content:contacts' %}">{% trans "Контакти" %}</a>
 
-      <form class="header-search" role="search" action="{% url 'catalog:search' %}" method="get" data-qa="search">
+      <form class="header-search" role="search" action="{% url 'catalog:search' %}" method="get" data-qa="search" data-search-suggest>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
           <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
         <label for="header-search-input" class="sr-only">{% trans "Пошук товарів" %}</label>
-        <input id="header-search-input" type="search" name="q" placeholder="{% trans 'Пошук…' %}" autocomplete="off">
+        <input id="header-search-input" type="search" name="q" placeholder="{% trans 'Пошук…' %}"
+               autocomplete="off" aria-autocomplete="list" aria-controls="header-search-suggest"
+               hx-get="{% url 'catalog:search_suggest' %}"
+               hx-trigger="keyup changed delay:250ms, focus"
+               hx-target="#header-search-suggest"
+               hx-swap="innerHTML">
+        <div class="search-suggest" id="header-search-suggest" role="listbox" aria-label="{% trans 'Підказки пошуку' %}" hidden></div>
       </form>
     </nav>
 
@@ -91,14 +97,20 @@
   </div>
 
   <nav class="mobile-nav" data-mobile-nav aria-label="{% trans 'Мобільна навігація' %}">
-    <form class="mobile-search" role="search" action="{% url 'catalog:search' %}" method="get">
+    <form class="mobile-search" role="search" action="{% url 'catalog:search' %}" method="get" data-search-suggest>
       <label for="mobile-search-input" class="sr-only">{% trans "Пошук товарів" %}</label>
       <div class="header-search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
           <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
-        <input id="mobile-search-input" type="search" name="q" placeholder="{% trans 'Пошук…' %}" autocomplete="off">
+        <input id="mobile-search-input" type="search" name="q" placeholder="{% trans 'Пошук…' %}"
+               autocomplete="off" aria-autocomplete="list" aria-controls="mobile-search-suggest"
+               hx-get="{% url 'catalog:search_suggest' %}"
+               hx-trigger="keyup changed delay:250ms, focus"
+               hx-target="#mobile-search-suggest"
+               hx-swap="innerHTML">
+        <div class="search-suggest" id="mobile-search-suggest" role="listbox" aria-label="{% trans 'Підказки пошуку' %}" hidden></div>
       </div>
     </form>
     <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>

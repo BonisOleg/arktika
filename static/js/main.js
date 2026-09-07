@@ -44,6 +44,10 @@
     if (e.key === "Escape") {
       setCart(false);
       dropdown?.classList.remove("is-open");
+      document.querySelectorAll(".search-suggest.is-open").forEach((el) => {
+        el.classList.remove("is-open");
+        el.hidden = true;
+      });
     }
   });
 
@@ -56,6 +60,15 @@
     if (dropdown && !dropdown.contains(e.target)) {
       dropdown.classList.remove("is-open");
     }
+    document.querySelectorAll("[data-search-suggest]").forEach((form) => {
+      if (!form.contains(e.target)) {
+        const panel = form.querySelector(".search-suggest");
+        if (panel) {
+          panel.classList.remove("is-open");
+          panel.hidden = true;
+        }
+      }
+    });
   });
 
   /* Відкривати drawer після оновлення контенту (add-to-cart).
@@ -67,8 +80,12 @@
         setCart(true);
       }
     }
+    if (e.target.classList?.contains("search-suggest")) {
+      const hasContent = e.target.childElementCount > 0;
+      e.target.classList.toggle("is-open", hasContent);
+      e.target.hidden = !hasContent;
+    }
   });
-
   /* CSRF для hx-post поза формами (видалення в drawer тощо). */
   const csrfCookie = (name) => {
     const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));

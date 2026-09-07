@@ -48,8 +48,8 @@ msgstr "Поиск"
 
 #: src/commerce/exceptions.py:12
 #, python-format
-msgid "Мінімальна сума замовлення %(min)s ₴, зараз %(current)s ₴"
-msgstr "Минимальная сумма заказа %(min)s ₴, сейчас %(current)s ₴"
+msgid "Мінімальна сума замовлення %(min)s грн, зараз %(current)s грн"
+msgstr "Минимальная сумма заказа %(min)s грн, сейчас %(current)s грн"
 
 #: src/commerce/exceptions.py:19
 #: templates/commerce/partials/cart_page_items.html:52
@@ -385,8 +385,8 @@ msgstr "К оплате"
 #: templates/commerce/checkout.html:109
 #: templates/partials/cart_drawer_content.html:30
 #, python-format
-msgid "Мінімальна сума замовлення %(min_order_amount)s ₴"
-msgstr "Минимальная сумма заказа %(min_order_amount)s ₴"
+msgid "Мінімальна сума замовлення %(min_order_amount)s грн"
+msgstr "Минимальная сумма заказа %(min_order_amount)s грн"
 
 #: templates/commerce/checkout.html:110 templates/commerce/checkout.html:112
 msgid "Підтвердити замовлення"
@@ -431,8 +431,8 @@ msgstr "Сумма товаров"
 
 #: templates/commerce/partials/cart_page_items.html:44
 #, python-format
-msgid "Мінімальна сума замовлення %(min_order_amount)s ₴. Додайте ще товарів."
-msgstr "Минимальная сумма заказа %(min_order_amount)s ₴. Добавьте ещё товаров."
+msgid "Мінімальна сума замовлення %(min_order_amount)s грн. Додайте ще товарів."
+msgstr "Минимальная сумма заказа %(min_order_amount)s грн. Добавьте ещё товаров."
 
 #: templates/commerce/partials/cart_page_items.html:46
 msgid "Оформити замовлення"

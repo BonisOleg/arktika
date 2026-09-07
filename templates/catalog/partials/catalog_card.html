@@ -15,7 +15,7 @@
   <div class="catalog-card-meta">
     {% with option=product.default_option %}
       <div class="price-with-vat">
-        <span class="price">{% if product.weight_options.count > 1 %}{% trans "від" %} {% endif %}{{ product.min_price }} ₴<span class="price-unit">/{{ option.get_unit_display }}</span></span>
+        <span class="price">{% if product.weight_options.count > 1 %}{% trans "від" %} {% endif %}{{ product.min_price }} грн<span class="price-unit">/{{ option.get_unit_display }}</span></span>
         <span class="price-vat">{% trans "з ПДВ" %}</span>
       </div>
       {% if option %}

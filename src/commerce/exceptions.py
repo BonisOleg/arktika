@@ -9,7 +9,7 @@ class MinOrderNotReachedError(CartError):
     def __init__(self, min_amount, current_amount):
         self.min_amount = min_amount
         self.current_amount = current_amount
-        super().__init__(_("Мінімальна сума замовлення %(min)s ₴, зараз %(current)s ₴") % {
+        super().__init__(_("Мінімальна сума замовлення %(min)s грн, зараз %(current)s грн") % {
             "min": min_amount, "current": current_amount,
         })
 

@@ -1,5 +1,6 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
+from django.views import View
 from django.views.generic import DetailView, ListView
 
 from . import selectors
@@ -119,3 +120,16 @@ class SearchView(ListView):
         ctx["page_title"] = _("Пошук: %(query)s") % {"query": self.query} if self.query else _("Пошук")
         ctx["query_string"] = _query_string_without_page(self.request)
         return ctx
+
+
+class SearchSuggestView(View):
+    """HTMX-підказки пошуку в шапці: назви товарів → PDP."""
+
+    def get(self, request):
+        query = request.GET.get("q", "").strip()
+        products = selectors.suggest_products(query)
+        return render(
+            request,
+            "catalog/partials/search_suggest.html",
+            {"products": products, "query": query},
+        )

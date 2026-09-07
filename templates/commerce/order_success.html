@@ -45,7 +45,7 @@
       </div>
       <div class="order-success-meta-row order-success-meta-total">
         <dt>{% if order.payment_status == "paid" %}{% trans "Сплачено" %}{% else %}{% trans "До сплати" %}{% endif %}</dt>
-        <dd><strong>{{ order.total_amount }} ₴</strong></dd>
+        <dd><strong>{{ order.total_amount }} грн</strong></dd>
       </div>
     </dl>
 
@@ -57,12 +57,12 @@
             <div class="order-success-item-info">
               <strong>{{ item.product_name }}</strong>
               {% if item.is_weighted %}
-                <span>{{ item.quantity_display }} × {{ item.unit_price }} ₴/{{ item.get_unit_display }}</span>
+                <span>{{ item.quantity_display }} × {{ item.unit_price }} грн/{{ item.get_unit_display }}</span>
               {% else %}
                 <span>{{ item.weight_option_label }} · {{ item.quantity_display }}</span>
               {% endif %}
             </div>
-            <div class="order-success-item-sum">{{ item.line_total }} ₴</div>
+            <div class="order-success-item-sum">{{ item.line_total }} грн</div>
           </li>
         {% endfor %}
       </ul>

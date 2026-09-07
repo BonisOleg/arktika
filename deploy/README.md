@@ -2,96 +2,144 @@
 
 Архітектура: `Internet → nginx:80 → backend:8000 (gunicorn) → Django`, `static/`+`media/` — shared volumes, `db` — PostgreSQL 16.
 
+Канон: **django-droplet-http-first** → пізніше SSL (**django-docker-ssl**).
+
+| | |
+|---|---|
+| Тестовий Droplet IP | `157.230.99.135` |
+| Шлях на сервері | `/var/www/arctica` |
+| URL (HTTP) | http://157.230.99.135/ |
+
 ## Локальний запуск (override + runserver)
 
 ```bash
-cp .env.example .env   # заповнити SECRET_KEY, POSTGRES_PASSWORD
+cp .env.example .env   # SECRET_KEY, POSTGRES_PASSWORD
+cp docker-compose.override.yml.example docker-compose.override.yml   # лише локально
 docker compose up --build
 ```
 
-Сайт: http://localhost:8000/ (backend напряму) або http://localhost/ (через nginx).
+Сайт: http://localhost:8000/ (backend) або http://localhost/ (nginx).
 
-## Dev з hot-reload (mount коду)
+> `docker-compose.override.yml` **не комітити** і **не тримати на Droplet** — інакше Compose підхопить `runserver` + `develop`.
+
+## Dev з hot-reload
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
-## Production (перший деплой — HTTP-only)
+## Тестовий сервер — HTTP по IP (перший залив)
+
+Без git remote — з Mac:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+./deploy/docker/rsync-up.sh root@157.230.99.135
 ```
 
-`.env` на сервері (не в git):
+На Droplet:
+
+```bash
+cd /var/www/arctica
+bash deploy/docker/install-docker.sh
+bash deploy/docker/gen-env.sh          # .env з унікальними SECRET_KEY / POSTGRES_PASSWORD
+# за бажанням: nano .env  (ADMIN_URL, Telegram, …)
+bash deploy/docker/deploy.sh
+curl -sf -H "Host: 157.230.99.135" http://127.0.0.1/healthz/   # → ok
+```
+
+У браузері: http://157.230.99.135/
+
+### Дані з локальної БД (опційно)
+
+```bash
+# Mac — після healthz на сервері, ДО createsuperuser якщо дамп уже з юзерами
+./deploy/docker/sync-data.sh push root@157.230.99.135:/var/www/arctica --yes
+```
+
+Або seed на сервері:
+
+```bash
+export COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
+docker compose exec backend python3 manage.py seed_demo
+docker compose exec -T backend python3 manage.py createsuperuser
+```
+
+### Оновлення коду
+
+```bash
+# Mac
+./deploy/docker/rsync-up.sh root@157.230.99.135
+# Droplet
+cd /var/www/arctica && bash deploy/docker/deploy.sh
+```
+
+(Коли з’явиться git remote — `git pull` + `deploy.sh`.)
+
+### `.env` на сервері (ключове)
+
+`gen-env.sh` генерує з `.env.docker.example`. Має бути:
 
 ```env
 DJANGO_SETTINGS_MODULE=config.settings.production
-SECRET_KEY=...
-ALLOWED_HOSTS=<домен>,<IP droplet>,127.0.0.1,localhost,backend
-CSRF_TRUSTED_ORIGINS=
+DEBUG=False
 USE_HTTPS=False
-POSTGRES_DB=arctica
-POSTGRES_USER=arctica
-POSTGRES_PASSWORD=...
-POSTGRES_HOST=db
-SITE_DOMAIN=<домен>
 SITE_PROTOCOL=http
+SITE_DOMAIN=157.230.99.135
+ALLOWED_HOSTS=157.230.99.135,127.0.0.1,localhost,backend
+CSRF_TRUSTED_ORIGINS=http://157.230.99.135
 ```
 
-Перевірка: `curl -sf http://<IP-або-домен>/healthz/` → `ok`.
+Порожній `CSRF_TRUSTED_ORIGINS` ламає POST (checkout/контакти) у браузері по IP.
+
+## Production compose (вручну)
+
+```bash
+export COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
+docker compose up -d --build
+```
+
+`deploy.sh` виставляє `COMPOSE_FILE` сам і **ігнорує** `override.yml`.
 
 ## Перехід на HTTPS (після certbot) — `django-docker-ssl`
 
-1. DNS: `A @` і `A www` → IP дроплета, дочекатись поширення.
-2. Переконатись, що HTTP-деплой вище вже працює на домені.
+1. DNS: `A @` і `A www` → `157.230.99.135`, дочекатись поширення.
+2. HTTP-деплой уже працює на домені.
 3. Certbot **на хості** (не в контейнері):
 
    ```bash
-   docker compose -f docker-compose.yml -f docker-compose.prod.yml stop nginx
+   export COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
+   docker compose stop nginx
    apt install -y certbot
    certbot certonly --standalone -d <домен> -d www.<домен> --agree-tos -m admin@<домен>
    ```
 
-4. Скопіювати `deploy/nginx/default.prod.conf.example` → `deploy/nginx/default.prod.conf`, замінити `example.com` на реальний домен.
-5. У `docker-compose.prod.yml` для `nginx` додати:
-
-   ```yaml
-   nginx:
-     ports:
-       - "80:80"
-       - "443:443"
-     volumes:
-       - ./deploy/nginx/default.prod.conf:/etc/nginx/conf.d/default.conf:ro
-       - /etc/letsencrypt:/etc/letsencrypt:ro
-   ```
-
-6. У `.env`: `USE_HTTPS=True`, `SITE_PROTOCOL=https`, `CSRF_TRUSTED_ORIGINS=https://<домен>,https://www.<домен>`.
-7. `git add` + commit усі зміни (nginx-конфіг, compose) — **не редагувати вручну на сервері**, лише `git pull`.
-8. `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build`.
-9. Перевірка: `curl -sfk https://<домен>/healthz/`, `certbot renew --dry-run`.
+4. Скопіювати `deploy/nginx/default.prod.conf.example` → `deploy/nginx/default.prod.conf`, замінити `example.com`.
+5. У `docker-compose.prod.yml` для `nginx` додати `443:443` і mount `/etc/letsencrypt` + prod conf (див. приклад у `default.prod.conf.example` / історію README).
+6. У `.env`: `USE_HTTPS=True`, `SITE_PROTOCOL=https`, `CSRF_TRUSTED_ORIGINS=https://<домен>,https://www.<домен>`, `ALLOWED_HOSTS` + домен, `SITE_DOMAIN=<домен>`.
+7. Зміни в git → `git pull` на сервері (не правити compose лише на дроплеті).
+8. `bash deploy/docker/deploy.sh` (або compose up).
+9. `curl -sfk https://<домен>/healthz/`, `certbot renew --dry-run`.
 
 ### Чому `USE_HTTPS=False` до certbot
 
-Якщо `SECURE_SSL_REDIRECT=True` без реального TLS у nginx, будь-який внутрішній HTTP-запит (напр. healthcheck) отримує `301 → https://...` і падає. `config/settings/production.py` тримає `SECURE_SSL_REDIRECT`/`SESSION_COOKIE_SECURE`/HSTS під єдиним флагом `USE_HTTPS` (env), щоб не патчити код при go-live — лише `.env`.
+Якщо `SECURE_SSL_REDIRECT=True` без TLS у nginx, внутрішній `/healthz/` отримує `301` і healthcheck падає. У `config/settings/production.py` SSL-прапорці зав’язані на `USE_HTTPS`.
 
 ## Типові проблеми
 
 | Симптом | Причина | Фікс |
 |---|---|---|
-| 502 Bad Gateway | backend ще стартує / migrate падає | `docker compose logs backend` |
-| Static/Media 404 | nginx `alias` ≠ `STATIC_ROOT`/`MEDIA_ROOT` | шляхи мають бути `/app/staticfiles/`, `/app/media/` |
-| CSRF failed | немає `CSRF_TRUSTED_ORIGINS` | додати `https://домен` після SSL |
-| DB connection refused | backend стартував раніше за `db` | вже покрито `depends_on: condition: service_healthy` |
-| `web`/`backend` unhealthy, логи 301 | `USE_HTTPS=True` без реального TLS | `USE_HTTPS=False` доки немає certbot |
+| 502 Bad Gateway | backend ще стартує / migrate | `docker compose logs backend` |
+| Static/Media 404 | nginx alias ≠ STATIC_ROOT | `/app/staticfiles/`, `/app/media/` |
+| CSRF failed | немає `CSRF_TRUSTED_ORIGINS=http://IP` | додати в `.env` |
+| 400 DisallowedHost | IP немає в `ALLOWED_HOSTS` | додати IP |
+| develop/runserver на Droplet | є `docker-compose.override.yml` | видалити; `deploy.sh` уже ігнорує через `COMPOSE_FILE` |
+| DB connection refused | backend раніше за db | `depends_on: condition: service_healthy` |
+| unhealthy / 301 | `USE_HTTPS=True` без TLS | `USE_HTTPS=False` |
 
-## Перед першим go-live (django_verification_skill)
+## Перед першим go-live
 
-- [ ] Згенерувати новий `SECRET_KEY` (не `change-me-in-production`): `python3 -c "import secrets; print(secrets.token_urlsafe(50))"`
-- [ ] Змінити `ADMIN_URL` з дефолтного `admin/` на випадковий шлях (SEC-08)
-- [ ] `POSTGRES_PASSWORD` — реальний пароль, не `change-me`
-- [ ] `WAYFORPAY_MERCHANT_LOGIN`/`WAYFORPAY_MERCHANT_SECRET_KEY` — реальні (sandbox) ключі клієнта
-- [ ] `RECAPTCHA_PUBLIC_KEY`/`RECAPTCHA_PRIVATE_KEY` — якщо форми мають бути захищені з першого дня
-- [ ] `manage.py check --deploy` — без WARNINGS (крім SECRET_KEY, якщо ще дефолтний)
-- [ ] `manage.py migrate --noinput`, `manage.py collectstatic --noinput`, `manage.py compilemessages -l ru` — без помилок
-- [ ] `curl -sf http://<домен-або-IP>/healthz/` → `ok`
+- [ ] `SECRET_KEY` / `POSTGRES_PASSWORD` згенеровані (`gen-env.sh`)
+- [ ] `ADMIN_URL` змінено з `admin/` (SEC-08)
+- [ ] `USE_HTTPS=False`, `SITE_PROTOCOL=http` для IP
+- [ ] `curl -sf -H "Host: 157.230.99.135" http://127.0.0.1/healthz/` → `ok`
+- [ ] WayForPay / Telegram / reCAPTCHA — за потреби; WFP по IP обмежений (потрібен домен)

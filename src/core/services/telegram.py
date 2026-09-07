@@ -59,7 +59,7 @@ def notify_new_order(order) -> None:
         price = item.unit_price
         total = item.line_total
         pack_bit = f" ({pack})" if pack else ""
-        lines.append(f"• {name}{pack_bit}: {qty} × {price} ₴ = <b>{total} ₴</b>")
+        lines.append(f"• {name}{pack_bit}: {qty} × {price} грн = <b>{total} грн</b>")
 
     if not items:
         lines.append("• —")
@@ -67,7 +67,7 @@ def notify_new_order(order) -> None:
     lines.extend(
         [
             "",
-            "<b>Сума: %s ₴</b>" % order.total_amount,
+            "<b>Сума: %s грн</b>" % order.total_amount,
         ]
     )
     if order.customer_email:

@@ -15,7 +15,7 @@
 
   {% if subtotal < min_order_amount %}
     <p class="checkout-note checkout-note-error" role="alert" data-min-order-banner>
-      {% blocktrans with min=min_order_amount current=subtotal %}Мінімальна сума замовлення {{ min }} ₴. Зараз у кошику {{ current }} ₴ — додайте ще товарів, щоб підтвердити замовлення.{% endblocktrans %}
+      {% blocktrans with min=min_order_amount current=subtotal %}Мінімальна сума замовлення {{ min }} грн. Зараз у кошику {{ current }} грн — додайте ще товарів, щоб підтвердити замовлення.{% endblocktrans %}
       <a href="{% url 'catalog:list' %}">{% trans "До каталогу" %}</a>
     </p>
   {% endif %}
@@ -105,22 +105,22 @@
             <div>
               <strong>{{ item.product.name }}</strong><br>
               {% if item.weight_option.is_weighted %}
-                <span>{{ item.quantity_display }} × {{ item.weight_option.price }} ₴/{{ item.weight_option.get_unit_display }}</span>
+                <span>{{ item.quantity_display }} × {{ item.weight_option.price }} грн/{{ item.weight_option.get_unit_display }}</span>
               {% else %}
                 <span>{{ item.weight_option.label }} × {{ item.quantity_display }}</span>
               {% endif %}
             </div>
-            <strong>{{ item.line_total }} ₴</strong>
+            <strong>{{ item.line_total }} грн</strong>
           </div>
         {% endfor %}
       </div>
       <div class="summary-totals">
-        <div class="vat-line"><span>{% trans "в т.ч. ПДВ" %}</span><span>{{ subtotal|floatformat:2 }} ₴</span></div>
-        <div class="grand"><span>{% trans "До сплати" %}</span><span>{{ subtotal }} ₴</span></div>
+        <div class="vat-line"><span>{% trans "в т.ч. ПДВ" %}</span><span>{{ vat_amount|floatformat:2 }} грн</span></div>
+        <div class="grand"><span>{% trans "До сплати" %}</span><span>{{ subtotal }} грн</span></div>
       </div>
       {% if subtotal < min_order_amount %}
         <p class="min-order-hint is-blocked" id="checkout-min-order-hint">
-          {% blocktrans with min=min_order_amount %}Мінімальна сума замовлення {{ min }} ₴. Кнопка підтвердження неактивна, доки сума менша за мінімум.{% endblocktrans %}
+          {% blocktrans with min=min_order_amount %}Мінімальна сума замовлення {{ min }} грн. Кнопка підтвердження неактивна, доки сума менша за мінімум.{% endblocktrans %}
         </p>
         <a class="btn btn-primary" href="{% url 'catalog:list' %}">{% trans "До каталогу" %}</a>
         <button class="btn btn-primary" type="submit" disabled aria-disabled="true" aria-describedby="checkout-min-order-hint">{% trans "Підтвердити замовлення" %}</button>

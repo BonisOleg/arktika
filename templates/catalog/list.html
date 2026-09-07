@@ -2,7 +2,7 @@
 {% load i18n static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260828d">
+  <link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260907c">
 {% endblock %}
 
 {% block title %}{% if active_category %}{{ active_category.seo_title|default:active_category.name }}{% else %}{{ page_title }}{% endif %} — Арктика{% endblock %}
@@ -26,16 +26,46 @@
     {% endif %}
   </nav>
 
+  {% if active_category %}
+    {% url 'catalog:category' active_category.slug as catalog_base %}
+  {% else %}
+    {% url 'catalog:list' as catalog_base %}
+  {% endif %}
+
   <div class="catalog-layout">
-    <aside class="catalog-toolbar" aria-label="{% trans 'Фільтри' %}">
-      <h1>{% if active_tag %}{{ page_title }}{% elif active_category %}{{ active_category.seo_h1|default:active_category.name }}{% else %}{{ page_title }}{% endif %}</h1>
-      <div class="filters" role="list" data-qa="filter-form">
-        <a class="filter-chip{% if not active_category and not active_tag %} is-active{% endif %}" href="{% url 'catalog:list' %}">{% trans "Усі" %}</a>
-        <a class="filter-chip{% if active_tag == 'hits' and not active_category %} is-active{% endif %}" href="{% url 'catalog:list' %}?tag=hits">{% trans "Хіти" %}</a>
-        <a class="filter-chip{% if active_tag == 'new' and not active_category %} is-active{% endif %}" href="{% url 'catalog:list' %}?tag=new">{% trans "Новинки" %}</a>
-        {% for category in categories %}
-          <a class="filter-chip{% if active_category.slug == category.slug %} is-active{% endif %}" href="{{ category.get_absolute_url }}{% if active_tag %}?tag={{ active_tag }}{% endif %}">{{ category.name }}</a>
-        {% endfor %}
+    <aside class="catalog-toolbar" aria-label="{% trans 'Фільтри каталогу' %}">
+      <h1>{% if active_tag and not active_category %}{{ page_title }}{% elif active_category %}{{ active_category.seo_h1|default:active_category.name }}{% else %}{{ page_title }}{% endif %}</h1>
+
+      <div class="catalog-filter-block catalog-filter-block--collections" aria-labelledby="catalog-collections-label">
+        <p class="catalog-group-label" id="catalog-collections-label">{% trans "Підбірки" %}</p>
+        <div class="collection-chips" role="list" data-qa="collection-filters">
+          <a class="filter-chip filter-chip--collection{% if not active_tag and not active_category %} is-active{% endif %}"
+             role="listitem"
+             href="{% url 'catalog:list' %}{% if current_sort != 'popularity' %}?sort={{ current_sort }}{% endif %}"
+             {% if not active_tag and not active_category %}aria-current="true"{% endif %}>{% trans "Усі товари" %}</a>
+          <a class="filter-chip filter-chip--collection{% if active_tag == 'hits' %} is-active{% endif %}"
+             role="listitem"
+             href="{% if active_tag == 'hits' %}{{ catalog_base }}{% if current_sort != 'popularity' %}?sort={{ current_sort }}{% endif %}{% else %}{{ catalog_base }}?tag=hits{% if current_sort != 'popularity' %}&sort={{ current_sort }}{% endif %}{% endif %}"
+             {% if active_tag == 'hits' %}aria-current="true"{% endif %}>{% trans "Хіти" %}</a>
+          <a class="filter-chip filter-chip--collection{% if active_tag == 'new' %} is-active{% endif %}"
+             role="listitem"
+             href="{% if active_tag == 'new' %}{{ catalog_base }}{% if current_sort != 'popularity' %}?sort={{ current_sort }}{% endif %}{% else %}{{ catalog_base }}?tag=new{% if current_sort != 'popularity' %}&sort={{ current_sort }}{% endif %}{% endif %}"
+             {% if active_tag == 'new' %}aria-current="true"{% endif %}>{% trans "Новинки" %}</a>
+        </div>
+      </div>
+
+      <div class="catalog-filter-block catalog-filter-block--categories" aria-labelledby="catalog-categories-label">
+        <p class="catalog-group-label" id="catalog-categories-label">{% trans "Категорії" %}</p>
+        <div class="filters" role="list" data-qa="filter-form">
+          <a class="filter-chip{% if not active_category %} is-active{% endif %}"
+             href="{% url 'catalog:list' %}{% if active_tag %}?tag={{ active_tag }}{% endif %}"
+             role="listitem">{% trans "Усі категорії" %}</a>
+          {% for category in categories %}
+            <a class="filter-chip{% if active_category.slug == category.slug %} is-active{% endif %}"
+               href="{{ category.get_absolute_url }}{% if active_tag %}?tag={{ active_tag }}{% endif %}"
+               role="listitem">{{ category.name }}</a>
+          {% endfor %}
+        </div>
       </div>
     </aside>
 
@@ -62,7 +92,7 @@
       {% else %}
         <div class="empty-state">
           <h2>{% trans "Товарів не знайдено" %}</h2>
-          <p>{% trans "Спробуйте іншу категорію." %}</p>
+          <p>{% trans "Спробуйте іншу категорію або підбірку." %}</p>
         </div>
       {% endif %}
     </section>

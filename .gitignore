@@ -5,8 +5,11 @@ __pycache__/
 /.venv/
 /env/
 .env
+docker-compose.override.yml
 /staticfiles/
 /media/
+deploy/data/*.json
+deploy/data/*.tar.gz
 *.log
 .DS_Store
 /dist/

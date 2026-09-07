@@ -13,13 +13,13 @@
           <div class="cart-item-info">
             <strong>{{ item.product.name }}</strong>
             {% if item.weight_option.is_weighted %}
-              <span>{{ item.quantity_display }} × {{ item.weight_option.price }} ₴/{{ item.weight_option.get_unit_display }}</span>
+              <span>{{ item.quantity_display }} × {{ item.weight_option.price }} грн/{{ item.weight_option.get_unit_display }}</span>
             {% else %}
               <span>{{ item.weight_option.label }} · {{ item.quantity_display }}</span>
             {% endif %}
           </div>
           <div class="cart-item-side">
-            <div class="price">{{ item.line_total }} ₴</div>
+            <div class="price">{{ item.line_total }} грн</div>
             <button type="button" class="cart-item-remove"
                     hx-post="{% url 'commerce:cart_item_remove' item.id %}"
                     hx-target="#cart-drawer-content"
@@ -35,10 +35,10 @@
     <div class="cart-drawer-footer">
       <div class="cart-total">
         <span>{% trans "Разом" %}</span>
-        <strong class="price">{{ subtotal }} ₴</strong>
+        <strong class="price">{{ subtotal }} грн</strong>
       </div>
       {% if subtotal < min_order_amount %}
-        <p class="min-order-hint is-blocked">{% blocktrans %}Мінімальна сума замовлення {{ min_order_amount }} ₴{% endblocktrans %}</p>
+        <p class="min-order-hint is-blocked">{% blocktrans %}Мінімальна сума замовлення {{ min_order_amount }} грн{% endblocktrans %}</p>
         <div class="cart-actions">
           <a class="btn btn-ghost" href="{% url 'commerce:cart' %}" data-qa="cart-page">{% trans "Відкрити кошик" %}</a>
           <a class="btn btn-primary" href="{% url 'catalog:list' %}" data-qa="cart-to-catalog">{% trans "До каталогу" %}</a>
@@ -55,7 +55,6 @@
   <div class="empty-state">
     <p>{% trans "Кошик порожній" %}</p>
     <div class="cart-actions">
-      <a class="btn btn-ghost" href="{% url 'commerce:cart' %}" data-qa="cart-page">{% trans "Відкрити кошик" %}</a>
       <a class="btn btn-primary" href="{% url 'catalog:list' %}">{% trans "До каталогу" %}</a>
     </div>
   </div>

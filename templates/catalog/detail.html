@@ -49,7 +49,7 @@
       {% with default_option=product.default_option %}
       <div class="pdp-price-row">
         <div class="price-with-vat">
-          <span class="price"><span data-price>{{ default_option.price }}</span> ₴<span class="price-unit" data-unit-suffix>/{{ default_option.get_unit_display }}</span></span>
+          <span class="price"><span data-price>{{ default_option.price }}</span> грн<span class="price-unit" data-unit-suffix>/{{ default_option.get_unit_display }}</span></span>
           <span class="price-vat">{% trans "з ПДВ" %}</span>
         </div>
         {% if product.is_available %}
@@ -91,7 +91,7 @@
         </div>
       </div>
       <p class="qty-hint" data-qty-hint data-min-order-text="{% trans 'Мін. замовлення' %}" data-step-text="{% trans 'крок' %}"></p>
-      <p class="pdp-line-total"><span>{% trans "Разом" %}:</span> <strong data-line-total>{{ default_option.price }} ₴</strong></p>
+      <p class="pdp-line-total"><span>{% trans "Разом" %}:</span> <strong data-line-total>{{ default_option.price }} грн</strong></p>
 
       <div class="pdp-actions"
            data-min-order="{{ min_order_amount|unlocalize }}"
@@ -114,7 +114,7 @@
         </form>
       </div>
       <p class="min-order-hint is-blocked" data-buy-now-hint hidden>
-        {% blocktrans with min=min_order_amount %}Мінімальна сума замовлення {{ min }} ₴. «Купити зараз» стане активним, коли сума кошика досягне мінімуму — або додайте товар до кошика і доберіть ще.{% endblocktrans %}
+        {% blocktrans with min=min_order_amount %}Мінімальна сума замовлення {{ min }} грн. «Купити зараз» стане активним, коли сума кошика досягне мінімуму — або додайте товар до кошика і доберіть ще.{% endblocktrans %}
       </p>
       {% endwith %}
 

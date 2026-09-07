@@ -2,14 +2,14 @@
 {% load i18n static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260907c">
+  <link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260907d">
 {% endblock %}
 
 {% block title %}{% if active_category %}{{ active_category.seo_title|default:active_category.name }}{% else %}{{ page_title }}{% endif %} — Арктика{% endblock %}
 {% block meta_description %}{% if active_category and active_category.seo_description %}{{ active_category.seo_description }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block extra_js %}
-  <script src="{% static 'js/catalog.js' %}" defer></script>
+  <script src="{% static 'js/catalog.js' %}?v=20260907a" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -72,14 +72,37 @@
     <section>
       <div class="sort-row">
         <span>{% blocktrans count counter=paginator.count %}Показано {{ counter }} товар{% plural %}Показано {{ counter }} товарів{% endblocktrans %}</span>
-        <label>
-          {% trans "Сортування" %}
-          <select name="sort" data-sort-navigate>
-            {% for value, label in sort_choices %}
-              <option value="?{{ query_string }}sort={{ value }}" {% if value == current_sort %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </label>
+        <div class="sort-control" data-sort-control>
+          <span class="sort-control-label" id="sort-label">{% trans "Сортування" %}</span>
+          <div class="custom-select" data-custom-select>
+            <button type="button"
+                    class="custom-select-trigger"
+                    data-custom-select-trigger
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-labelledby="sort-label">
+              <span data-custom-select-label>
+                {% for value, label in sort_choices %}
+                  {% if value == current_sort %}{{ label }}{% endif %}
+                {% endfor %}
+              </span>
+              <svg class="custom-select-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <ul class="custom-select-menu" role="listbox" data-custom-select-menu hidden>
+              {% for value, label in sort_choices %}
+                <li role="option"
+                    class="custom-select-option{% if value == current_sort %} is-selected{% endif %}"
+                    data-custom-select-option
+                    data-href="?{{ query_string }}sort={{ value }}"
+                    {% if value == current_sort %}aria-selected="true"{% else %}aria-selected="false"{% endif %}>
+                  {{ label }}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
       </div>
 
       {% if products %}

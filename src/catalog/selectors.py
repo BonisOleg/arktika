@@ -1,13 +1,15 @@
 """Selectors — лише читання (ecommerce_business_logic_skill), без мутацій."""
-from django.db.models import Case, IntegerField, QuerySet, When
+from django.db.models import Case, F, IntegerField, Min, QuerySet, When
 
 from .models import Category, Product
 
+# price_* — Min(weight_options.price) = те саме «від … грн» на картці.
+# Прямий order_by(weight_options__price) дає JOIN → дублікати й кривий порядок.
 SORT_OPTIONS = {
-    "popularity": ("-is_hit", "-created_at"),
-    "price_asc": ("weight_options__price",),
-    "price_desc": ("-weight_options__price",),
-    "new": ("-created_at",),
+    "popularity": ("-is_hit", "-created_at", "name"),
+    "price_asc": (F("sort_price").asc(nulls_last=True), "name"),
+    "price_desc": (F("sort_price").desc(nulls_last=True), "name"),
+    "new": ("-created_at", "name"),
 }
 
 TAG_FILTERS = {
@@ -29,6 +31,7 @@ def get_catalog_products(
         Product.objects.filter(is_available=True, category__is_active=True)
         .select_related("category")
         .prefetch_related("weight_options", "images")
+        .annotate(sort_price=Min("weight_options__price"))
     )
     if category_slug:
         qs = qs.filter(category__slug=category_slug)
@@ -36,7 +39,7 @@ def get_catalog_products(
     if tag_field:
         qs = qs.filter(**{tag_field: True})
     order_by = SORT_OPTIONS.get(sort or "popularity", SORT_OPTIONS["popularity"])
-    return qs.order_by(*order_by).distinct()
+    return qs.order_by(*order_by)
 
 
 def _match_ids_by_name_or_sku(query: str) -> list[int]:

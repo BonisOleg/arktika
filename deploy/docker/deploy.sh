@@ -35,13 +35,14 @@ if [[ ! -f .env ]]; then
   exit 1
 fi
 
-if grep -q 'DROPLET_IP' .env; then
-  echo "FATAL: literal DROPLET_IP still in .env (ALLOWED_HOSTS/CSRF)."
+# Лише значення змінних (коментарі з текстом DROPLET_IP ігноруємо).
+if grep -E '^(ALLOWED_HOSTS|CSRF_TRUSTED_ORIGINS)=' .env | grep -q 'DROPLET_IP'; then
+  echo "FATAL: literal DROPLET_IP in ALLOWED_HOSTS/CSRF_TRUSTED_ORIGINS. Put real IPv4."
   exit 1
 fi
 
-if ! grep -q "$DROPLET_IP" .env; then
-  echo "FATAL: expected IP $DROPLET_IP missing from .env"
+if ! grep -E '^(ALLOWED_HOSTS|CSRF_TRUSTED_ORIGINS|SITE_DOMAIN)=' .env | grep -q "$DROPLET_IP"; then
+  echo "FATAL: expected IP $DROPLET_IP missing from ALLOWED_HOSTS/CSRF/SITE_DOMAIN"
   exit 1
 fi
 

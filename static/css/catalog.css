@@ -181,9 +181,19 @@
 }
 
 .catalog-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-5);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--catalog-grid-gap, var(--space-5));
+  --catalog-grid-gap: var(--space-5);
+  --catalog-grid-cols: 1;
+}
+
+.catalog-grid > .catalog-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .sort-row + .catalog-grid {
@@ -274,7 +284,14 @@
 
 @media (min-width: 640px) {
   .catalog-grid {
-    grid-template-columns: repeat(2, 1fr);
+    --catalog-grid-cols: 2;
+  }
+
+  .catalog-grid > .catalog-card {
+    width: calc(
+      (100% - (var(--catalog-grid-cols) - 1) * var(--catalog-grid-gap)) /
+        var(--catalog-grid-cols)
+    );
   }
 }
 
@@ -298,7 +315,7 @@
   }
 
   .catalog-grid {
-    grid-template-columns: repeat(3, 1fr);
+    --catalog-grid-cols: 3;
   }
 }
 

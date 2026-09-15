@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n static catalog_extras %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/home.css' %}?v=20260828k">
+  <link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260915a">
+  <link rel="stylesheet" href="{% static 'css/home.css' %}?v=20260915e">
 {% endblock %}
 
 {% block content %}
@@ -44,60 +45,50 @@
 </section>
 
 {% if hits %}
-<section class="section" id="hits">
+<section class="section home-shelf" id="hits">
   <div class="container">
     <div class="section-head">
-      <div class="section-head-row">
-        <h2>{{ home.hits_title }}</h2>
-        <a class="section-head-link" href="{% url 'catalog:list' %}?tag=hits">{% trans "Усі хіти" %}</a>
-      </div>
+      <h2>{{ home.hits_title }}</h2>
       <p>{{ home.hits_subtitle }}</p>
     </div>
-    <div class="product-grid" data-qa="product-grid">
+    {% with cols=hits|length|pick_grid_columns:4 %}
+    <div
+      class="catalog-grid home-shelf-grid"
+      data-qa="product-grid"
+      data-grid-cols="{{ cols }}"
+      style="--grid-cols-desktop: {{ cols }};">
       {% for product in hits %}
-        <a class="product-tile" href="{{ product.get_absolute_url }}">
-          <div class="product-tile-media">
-            {% with photo=product.images.first %}
-              {% if photo %}<img src="{{ photo.image.url }}" alt="">{% else %}<div class="media-placeholder" aria-hidden="true"></div>{% endif %}
-            {% endwith %}
-          </div>
-          <h3>{{ product.name }}</h3>
-          <div class="product-tile-meta">
-            <div class="price-with-vat"><span class="price">{{ product.min_price }} грн<span class="price-unit">/{{ product.default_option.get_unit_display }}</span></span><span class="price-vat">{% trans "з ПДВ" %}</span></div>
-            {% if product.is_available %}<span class="badge badge-ok">{% trans "В наявності" %}</span>{% endif %}
-          </div>
-        </a>
+        {% include "catalog/partials/catalog_card.html" %}
       {% endfor %}
+    </div>
+    {% endwith %}
+    <div class="section-more">
+      <a href="{% url 'catalog:list' %}?tag=hits">{% trans "Переглянути всі" %} →</a>
     </div>
   </div>
 </section>
 {% endif %}
 
 {% if new_products %}
-<section class="section section-flush">
+<section class="section home-shelf home-shelf-alt" id="news">
   <div class="container">
     <div class="section-head">
-      <div class="section-head-row">
-        <h2>{{ home.news_title }}</h2>
-        <a class="section-head-link" href="{% url 'catalog:list' %}?tag=new">{% trans "Усі новинки" %}</a>
-      </div>
+      <h2>{{ home.news_title }}</h2>
       <p>{{ home.news_subtitle }}</p>
     </div>
-    <div class="product-grid">
+    {% with cols=new_products|length|pick_grid_columns:4 %}
+    <div
+      class="catalog-grid home-shelf-grid"
+      data-grid-cols="{{ cols }}"
+      style="--grid-cols-desktop: {{ cols }};">
+      {% trans "Новинка" as news_badge %}
       {% for product in new_products %}
-        <a class="product-tile" href="{{ product.get_absolute_url }}">
-          <div class="product-tile-media">
-            {% with photo=product.images.first %}
-              {% if photo %}<img src="{{ photo.image.url }}" alt="">{% else %}<div class="media-placeholder" aria-hidden="true"></div>{% endif %}
-            {% endwith %}
-          </div>
-          <h3>{{ product.name }}</h3>
-          <div class="product-tile-meta">
-            <div class="price-with-vat"><span class="price">{{ product.min_price }} грн<span class="price-unit">/{{ product.default_option.get_unit_display }}</span></span><span class="price-vat">{% trans "з ПДВ" %}</span></div>
-            <span class="badge">{% trans "Новинка" %}</span>
-          </div>
-        </a>
+        {% include "catalog/partials/catalog_card.html" with card_badge=news_badge %}
       {% endfor %}
+    </div>
+    {% endwith %}
+    <div class="section-more">
+      <a href="{% url 'catalog:list' %}?tag=new">{% trans "Переглянути всі" %} →</a>
     </div>
   </div>
 </section>

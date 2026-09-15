@@ -33,6 +33,7 @@ PRODUCTS = [
         "name": "Скумбрія холодного копчення",
         "slug": "skumbria-holodnogo-kopchennya",
         "is_hit": True,
+        "is_new": True,
         "images": ["skopchena-1.jpg", "product-2.jpg", "product-3.jpg", "product-4.jpg"],
         # Штучний товар — 3 фіксовані пачки, ціна за пачку (не за кг).
         "options": [
@@ -46,6 +47,7 @@ PRODUCTS = [
         "name": "Рексія холодного копчення",
         "slug": "reksiya-holodnogo-kopchennya",
         "is_hit": True,
+        "is_new": True,
         "images": ["reksiya.jpg"],
         "options": [("500 г", "pack", "260.00", "ARK-RK-500", True, "1", "")],
     },
@@ -54,6 +56,7 @@ PRODUCTS = [
         "name": "Оселедець пряного посолу",
         "slug": "oseledets-pryanogo-posolu",
         "is_hit": True,
+        "is_new": True,
         "images": ["oseledets.jpg"],
         # Ваговий товар — ціна за 1 кг, вибір ваги з кроком 0.1 кг, мін. замовлення 0.3 кг.
         "options": [("1 кг", "kg", "296.00", "ARK-OS-KG", True, "0.3", "≈ 150–250 г/риба")],
@@ -62,6 +65,7 @@ PRODUCTS = [
         "category": "ikra",
         "name": "Ікра мойви",
         "slug": "ikra-moyvy",
+        "is_hit": True,
         "is_new": True,
         "images": ["ikra-moyvy.jpg"],
         # Штучний товар — фіксована банка 250 г, рахуємо в штуках банок.
@@ -71,6 +75,7 @@ PRODUCTS = [
         "category": "sneky",
         "name": "Снеки з лосося",
         "slug": "sneky-z-lososya",
+        "is_hit": True,
         "is_new": True,
         "images": ["snack.jpg"],
         # Штучний товар — кілька пачок різної ваги (клієнтський приклад: 200/500/1000 г).
@@ -85,6 +90,7 @@ PRODUCTS = [
         "category": "salaty",
         "name": "Салат далекосхідний",
         "slug": "salat-dalekoshidnyi",
+        "is_hit": True,
         "is_new": True,
         "images": ["seafood-salad.jpg"],
         "options": [("Контейнер 300 г", "pkg", "210.00", "ARK-SD-300", True, "1", "")],
@@ -93,6 +99,8 @@ PRODUCTS = [
         "category": "vyalena",
         "name": "Юкола форелі",
         "slug": "yukola-foreli",
+        "is_hit": True,
+        "is_new": True,
         "images": ["product-2.jpg"],
         "options": [("400 г", "pack", "310.00", "ARK-YF-400", True, "1", "")],
     },
@@ -100,6 +108,8 @@ PRODUCTS = [
         "category": "morozhena",
         "name": "Скумбрія морожена",
         "slug": "skumbria-morozhena",
+        "is_hit": True,
+        "is_new": True,
         "images": ["moroz.jpg"],
         # Мікс: вагова позиція (кг, вибір ваги) + окремий штучний варіант "ящик" (10 кг, оптова ціна).
         "options": [
@@ -111,6 +121,8 @@ PRODUCTS = [
         "category": "preservy",
         "name": "Філе оселедця в маслі",
         "slug": "file-oseledtsya-v-masli",
+        "is_hit": True,
+        "is_new": True,
         "images": ["kilka.jpg"],
         "options": [("Банка 300 г", "pkg", "175.00", "ARK-FO-300", True, "1", "")],
     },

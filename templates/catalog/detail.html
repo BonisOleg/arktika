@@ -5,8 +5,8 @@
 {% block meta_description %}{{ product.seo_description|default:product.description|truncatewords:30 }}{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260828d">
-  <link rel="stylesheet" href="{% static 'css/product.css' %}?v=20260828d">
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}?v=20260828d">
+<link rel="stylesheet" href="{% static 'css/product.css' %}?v=20260828d">
 {% endblock %}
 
 {% block content %}
@@ -24,19 +24,20 @@
     <div class="pdp-gallery">
       <div class="pdp-main-image">
         {% if primary_photo %}
-          <img data-main-photo src="{{ primary_photo.image.url }}" alt="{{ product.name }}">
+        <img data-main-photo src="{{ primary_photo.image.url }}" alt="{{ product.name }}">
         {% else %}
-          <div class="media-placeholder" aria-hidden="true" data-main-photo></div>
+        <div class="media-placeholder" aria-hidden="true" data-main-photo></div>
         {% endif %}
       </div>
       {% if product.images.all|length > 1 %}
-        <div class="pdp-thumbs" aria-label="{% trans 'Мініатюри' %}">
-          {% for photo in product.images.all %}
-            <button type="button" class="{% if forloop.first %}is-active{% endif %}" data-thumb="{{ photo.image.url }}" aria-label="{% trans 'Фото' %} {{ forloop.counter }}">
-              <img src="{{ photo.image.url }}" alt="">
-            </button>
-          {% endfor %}
-        </div>
+      <div class="pdp-thumbs" aria-label="{% trans 'Мініатюри' %}">
+        {% for photo in product.images.all %}
+        <button type="button" class="{% if forloop.first %}is-active{% endif %}" data-thumb="{{ photo.image.url }}"
+          aria-label="{% trans 'Фото' %} {{ forloop.counter }}">
+          <img src="{{ photo.image.url }}" alt="">
+        </button>
+        {% endfor %}
+      </div>
       {% endif %}
     </div>
 
@@ -49,40 +50,44 @@
       {% with default_option=product.default_option %}
       <div class="pdp-price-row">
         <div class="price-with-vat">
-          <span class="price"><span data-price>{{ default_option.price }}</span> грн<span class="price-unit" data-unit-suffix>/{{ default_option.get_unit_display }}</span></span>
+          <span class="price"><span data-price>{{ default_option.price }}</span> грн<span class="price-unit"
+              data-unit-suffix>/{{ default_option.get_unit_display }}</span></span>
           <span class="price-vat">{% trans "з ПДВ" %}</span>
         </div>
         {% if product.is_available %}
-          <span class="badge badge-ok">{% trans "В наявності" %}</span>
+        <span class="badge badge-ok">{% trans "В наявності" %}</span>
         {% else %}
-          <span class="badge badge-off">{% trans "Немає в наявності" %}</span>
+        <span class="badge badge-off">{% trans "Немає в наявності" %}</span>
         {% endif %}
       </div>
-      <p class="unit-weight-hint" data-unit-weight-hint {% if not default_option.approx_unit_weight %}hidden{% endif %}>{{ default_option.approx_unit_weight }}</p>
+      <p class="unit-weight-hint" data-unit-weight-hint {% if not default_option.approx_unit_weight %}hidden{% endif %}>
+        {{ default_option.approx_unit_weight }}</p>
 
       {% if product.weight_options.count > 1 %}
-        <fieldset class="option-block">
-          <legend>{% trans "Фасування" %}</legend>
-          <div class="option-list">
-            {% for option in product.weight_options.all %}
-              <label>
-                <input type="radio" name="pack" data-variant
-                       data-price="{{ option.price|unlocalize }}" data-sku="{{ option.sku }}"
-                       data-unit="{{ option.unit }}" data-unit-label="{{ option.get_unit_display }}"
-                       data-step="{{ option.step_quantity|unlocalize }}" data-min-quantity="{{ option.min_quantity|unlocalize }}"
-                       data-approx-weight="{{ option.approx_unit_weight }}"
-                       data-add-url="{% url 'commerce:cart_add' product.id option.id %}"
-                       {% if option.is_default %}checked{% endif %}>
-                <span>{{ option.label }}</span>
-              </label>
-            {% endfor %}
-          </div>
-        </fieldset>
+      <fieldset class="option-block">
+        <legend>{% trans "Фасування" %}</legend>
+        <div class="option-list">
+          {% for option in product.weight_options.all %}
+          <label>
+            <input type="radio" name="pack" data-variant data-price="{{ option.price|unlocalize }}"
+              data-sku="{{ option.sku }}" data-unit="{{ option.unit }}" data-unit-label="{{ option.get_unit_display }}"
+              data-step="{{ option.step_quantity|unlocalize }}" data-min-quantity="{{ option.min_quantity|unlocalize }}"
+              data-approx-weight="{{ option.approx_unit_weight }}"
+              data-add-url="{% url 'commerce:cart_add' product.id option.id %}"
+              {% if option.is_default %}checked{% endif %}>
+            <span>{{ option.label }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </fieldset>
       {% endif %}
 
-      <div class="qty-row" data-default-unit="{{ default_option.unit }}" data-default-unit-label="{{ default_option.get_unit_display }}"
-           data-default-step="{{ default_option.step_quantity|unlocalize }}" data-default-min="{{ default_option.min_quantity|unlocalize }}"
-           data-default-price="{{ default_option.price|unlocalize }}" data-default-approx-weight="{{ default_option.approx_unit_weight }}">
+      <div class="qty-row" data-default-unit="{{ default_option.unit }}"
+        data-default-unit-label="{{ default_option.get_unit_display }}"
+        data-default-step="{{ default_option.step_quantity|unlocalize }}"
+        data-default-min="{{ default_option.min_quantity|unlocalize }}"
+        data-default-price="{{ default_option.price|unlocalize }}"
+        data-default-approx-weight="{{ default_option.approx_unit_weight }}">
         <span data-qty-label data-label-weight="{% trans 'Вага' %}" data-label-piece="{% trans 'Кількість' %}">{% trans "Кількість" %}</span>
         <div class="qty-control">
           <button type="button" data-qty-minus aria-label="{% trans 'Менше' %}">−</button>
@@ -90,27 +95,25 @@
           <button type="button" data-qty-plus aria-label="{% trans 'Більше' %}">+</button>
         </div>
       </div>
-      <p class="qty-hint" data-qty-hint data-min-order-text="{% trans 'Мін. замовлення' %}" data-step-text="{% trans 'крок' %}"></p>
+      <p class="qty-hint" data-qty-hint data-min-order-text="{% trans 'Мін. замовлення' %}"
+        data-step-text="{% trans 'крок' %}"></p>
       <p class="pdp-line-total"><span>{% trans "Разом" %}:</span> <strong data-line-total>{{ default_option.price }} грн</strong></p>
 
-      <div class="pdp-actions"
-           data-min-order="{{ min_order_amount|unlocalize }}"
-           data-cart-subtotal="{{ cart_subtotal|unlocalize }}">
-        <form data-cart-add-form data-qa="cart-add"
-              hx-post="{% url 'commerce:cart_add' product.id default_option.id %}"
-              hx-target="#cart-drawer-content" hx-swap="innerHTML">
+      <div class="pdp-actions" data-min-order="{{ min_order_amount|unlocalize }}"
+        data-cart-subtotal="{{ cart_subtotal|unlocalize }}">
+        <form data-cart-add-form data-qa="cart-add" hx-post="{% url 'commerce:cart_add' product.id default_option.id %}"
+          hx-target="#cart-drawer-content" hx-swap="innerHTML">
           {% csrf_token %}
           <input type="hidden" name="quantity" data-qty-input value="{{ default_option.min_quantity|unlocalize }}">
           <button class="btn btn-primary" type="submit" {% if not product.is_available %}disabled{% endif %}>{% trans "До кошика" %}</button>
         </form>
-        <form data-buy-now-form
-              hx-post="{% url 'commerce:cart_add' product.id default_option.id %}"
-              hx-target="#cart-drawer-content" hx-swap="innerHTML">
+        <form data-buy-now-form hx-post="{% url 'commerce:cart_add' product.id default_option.id %}"
+          hx-target="#cart-drawer-content" hx-swap="innerHTML">
           {% csrf_token %}
-          <input type="hidden" name="quantity" data-qty-input-buynow value="{{ default_option.min_quantity|unlocalize }}">
+          <input type="hidden" name="quantity" data-qty-input-buynow
+            value="{{ default_option.min_quantity|unlocalize }}">
           <input type="hidden" name="redirect" value="checkout">
-          <button class="btn btn-dark" type="submit" data-buy-now
-                  {% if not product.is_available %}disabled{% endif %}>{% trans "Купити зараз" %}</button>
+          <button class="btn btn-dark" type="submit" data-buy-now {% if not product.is_available %}disabled{% endif %}>{% trans "Купити зараз" %}</button>
         </form>
       </div>
       <p class="min-order-hint is-blocked" data-buy-now-hint hidden>
@@ -135,20 +138,20 @@
   {% endwith %}
 
   {% if related_products %}
-    <section class="section section-flush">
-      <div class="section-head">
-        <h2>{% trans "Схожі товари" %}</h2>
-      </div>
-      <div class="catalog-grid">
-        {% for related in related_products %}
-          {% include "catalog/partials/catalog_card.html" with product=related %}
-        {% endfor %}
-      </div>
-    </section>
+  <section class="section section-flush">
+    <div class="section-head">
+      <h2>{% trans "Схожі товари" %}</h2>
+    </div>
+    <div class="catalog-grid">
+      {% for related in related_products %}
+      {% include "catalog/partials/catalog_card.html" with product=related %}
+      {% endfor %}
+    </div>
+  </section>
   {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
-  <script src="{% static 'js/product.js' %}?v=20260828d" defer></script>
+<script src="{% static 'js/product.js' %}?v=20260828d" defer></script>
 {% endblock %}

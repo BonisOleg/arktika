@@ -9,20 +9,22 @@
           <div class="media-placeholder" aria-hidden="true"></div>
         {% endif %}
       {% endwith %}
+      {% if card_badge %}
+        <span class="catalog-card-badge{% if card_badge_mod %} {{ card_badge_mod }}{% endif %}">{{ card_badge }}</span>
+      {% endif %}
     </div>
     <h2>{{ product.name }}</h2>
   </a>
   <div class="catalog-card-meta">
     {% with option=product.default_option %}
       <div class="price-with-vat">
-        <span class="price">{% if product.weight_options.count > 1 %}{% trans "від" %} {% endif %}{{ product.min_price }} грн<span class="price-unit">/{{ option.get_unit_display }}</span></span>
-        <span class="price-vat">{% trans "з ПДВ" %}</span>
+        <span class="price">{% if product.weight_options.count > 1 %}{% trans "від" %} {% endif %}{{ product.min_price }}&nbsp;₴<span class="price-unit">/{{ option.get_unit_display }}</span></span>
       </div>
       {% if option %}
         <form data-qa="cart-add" hx-post="{% url 'commerce:cart_add' product.id option.id %}" hx-target="#cart-drawer-content" hx-swap="innerHTML">
           {% csrf_token %}
           <input type="hidden" name="quantity" value="{{ option.min_quantity|unlocalize }}">
-          <button class="btn btn-primary" type="submit">{% trans "Купити" %}</button>
+          <button class="btn btn-primary" type="submit">{% trans "У кошик" %}</button>
         </form>
       {% endif %}
     {% endwith %}

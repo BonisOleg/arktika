@@ -20,6 +20,9 @@
   z-index: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
+  container-type: inline-size;
+  container-name: hero-copy;
   background:
     radial-gradient(ellipse at 20% 0%, rgba(56, 168, 216, 0.28), transparent 55%),
     linear-gradient(160deg, #0a1a30 0%, #102848 52%, #183858 100%);
@@ -32,29 +35,31 @@
 
 .hero-copy-inner {
   width: 100%;
-  max-width: 34rem;
+  max-width: none;
   margin: 0 auto;
   display: grid;
-  gap: var(--space-3);
+  gap: clamp(0.7rem, 2.4vw, 1.1rem);
   align-content: center;
+  justify-items: center;
+  text-align: center;
 }
 
 .hero-brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: clamp(0.55rem, 1.6vw, 0.85rem);
   margin-bottom: 0.15rem;
 }
 
 .hero-brand img {
-  height: 1.85rem;
+  height: clamp(1.7rem, 4.5vw, 2rem);
   width: auto;
   filter: brightness(0) invert(1);
 }
 
 .hero-brand span {
   font-family: var(--font-display);
-  font-size: clamp(1.15rem, 3.2vw, 1.45rem);
+  font-size: clamp(1.1rem, 3.2vw, 1.4rem);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -64,11 +69,11 @@
 
 .hero h1 {
   font-family: var(--font-hero);
-  font-size: clamp(2.05rem, 7.2vw, 3.55rem);
+  font-size: clamp(2.05rem, 7.2vw, 3.35rem);
   font-weight: 600;
   line-height: 0.98;
   letter-spacing: -0.045em;
-  max-width: 11ch;
+  max-width: none;
   text-wrap: balance;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -86,9 +91,10 @@
 }
 
 .hero-copy p {
-  max-width: 26ch;
+  max-width: min(36ch, 92%);
   margin-top: 0.35rem;
-  font-size: clamp(0.95rem, 2.1vw, 1.05rem);
+  margin-inline: auto;
+  font-size: clamp(0.95rem, 2.1vw, 1.08rem);
   line-height: 1.45;
   letter-spacing: 0.005em;
   color: rgba(255, 255, 255, 0.72);
@@ -100,11 +106,17 @@
 .hero-cta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  justify-content: center;
+  gap: clamp(0.65rem, 2vw, 1rem);
   margin-top: 0.55rem;
   opacity: 0;
   transform: translateY(12px);
   animation: rise 0.8s var(--ease) 0.4s forwards;
+}
+
+.hero-cta .btn {
+  font-size: clamp(0.92rem, 2vw, 1.02rem);
+  padding: clamp(0.65rem, 1.6vw, 0.8rem) clamp(1.15rem, 3vw, 1.4rem);
 }
 
 .btn-on-dark {
@@ -182,6 +194,87 @@
 
 .product-tile-meta .price-with-vat {
   align-items: baseline;
+}
+
+.home-shelf {
+  padding-block: clamp(2rem, 4vw, 3rem);
+}
+
+.home-shelf-alt {
+  background: var(--color-snow);
+  border-block: 1px solid var(--color-line);
+}
+
+.home-shelf .section-head {
+  margin-bottom: var(--space-4);
+}
+
+.home-shelf .section-head p {
+  max-width: 40rem;
+}
+
+.home-shelf-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--grid-gap, var(--space-4));
+  --grid-gap: var(--space-4);
+  --grid-cols: 2;
+}
+
+.home-shelf-grid > .catalog-card {
+  width: calc((100% - (var(--grid-cols) - 1) * var(--grid-gap)) / var(--grid-cols));
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.home-shelf .catalog-card-media {
+  aspect-ratio: 5 / 4;
+}
+
+.home-shelf .catalog-card {
+  gap: var(--space-2);
+}
+
+.home-shelf .catalog-card h2 {
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
+}
+
+.section-more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
+}
+
+.section-more a {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-cyan);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.section-more a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 480px) {
+  .home-shelf-grid {
+    --grid-cols: 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-shelf-grid {
+    --grid-cols: 3;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-shelf-grid {
+    --grid-cols: var(--grid-cols-desktop, 4);
+  }
 }
 
 .trust-strip {
@@ -272,13 +365,58 @@
   }
 
   .hero-copy {
-    padding: var(--space-6) var(--space-5);
+    padding: var(--space-6) clamp(1.25rem, 3.5vw, 2.5rem);
     align-items: center;
+    justify-content: center;
     min-height: 0;
   }
 
   .hero-copy-inner {
-    margin: 0;
+    margin: 0 auto;
+    max-width: none;
+    /* vw fallback → cqi від ширини лівої половини */
+    gap: clamp(0.85rem, 1.4vw, 1.55rem);
+    gap: clamp(0.85rem, 2.1cqi, 1.55rem);
+  }
+
+  .hero-brand {
+    gap: clamp(0.65rem, 1.1vw, 1rem);
+    gap: clamp(0.65rem, 1.7cqi, 1rem);
+  }
+
+  .hero-brand img {
+    height: clamp(1.95rem, 1.7vw, 2.75rem);
+    height: clamp(1.95rem, 2.95cqi, 2.75rem);
+  }
+
+  .hero-brand span {
+    font-size: clamp(1.2rem, 1.35vw, 2.05rem);
+    font-size: clamp(1.2rem, 2.35cqi, 2.05rem);
+  }
+
+  .hero h1 {
+    font-size: clamp(2.35rem, 3.55vw, 5.15rem);
+    font-size: clamp(2.35rem, 6.85cqi, 5.15rem);
+  }
+
+  .hero-copy p {
+    max-width: min(42ch, 90%);
+    font-size: clamp(1rem, 1.05vw, 1.45rem);
+    font-size: clamp(1rem, 1.75cqi, 1.45rem);
+  }
+
+  .hero-cta {
+    gap: clamp(0.75rem, 1.15vw, 1.35rem);
+    gap: clamp(0.75rem, 1.85cqi, 1.35rem);
+    margin-top: clamp(0.55rem, 1.2cqi, 1rem);
+  }
+
+  .hero-cta .btn {
+    font-size: clamp(0.98rem, 0.95vw, 1.22rem);
+    font-size: clamp(0.98rem, 1.55cqi, 1.22rem);
+    padding:
+      clamp(0.72rem, 1.15cqi, 1.05rem)
+      clamp(1.3rem, 2.45cqi, 1.95rem);
   }
 
   .hero-visual {
@@ -299,25 +437,7 @@
   }
 
   .hero-copy {
-    padding:
-      var(--space-7)
-      var(--space-7)
-      var(--space-7)
-      max(2rem, calc((100vw - var(--container)) / 2 + 1.25rem));
-  }
-
-  .hero-copy-inner {
-    margin: 0;
-    max-width: 28rem;
-  }
-
-  .hero-brand img {
-    height: 2.05rem;
-  }
-
-  .hero h1 {
-    font-size: clamp(2.35rem, 3.6vw, 3.55rem);
-    max-width: 10.5ch;
+    padding: var(--space-7) clamp(1.5rem, 4.5vw, 3.75rem);
   }
 
   .hero-visual img {

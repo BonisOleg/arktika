@@ -18,12 +18,12 @@ class HomeView(TemplateView):
         ctx["hits"] = (
             Product.objects.filter(is_available=True, is_hit=True)
             .select_related("category")
-            .prefetch_related("weight_options", "images")[:4]
+            .prefetch_related("weight_options", "images")[:8]
         )
         ctx["new_products"] = (
             Product.objects.filter(is_available=True, is_new=True)
             .select_related("category")
-            .prefetch_related("weight_options", "images")[:4]
+            .prefetch_related("weight_options", "images")[:8]
         )
         return ctx
 

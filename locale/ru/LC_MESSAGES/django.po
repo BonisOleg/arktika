@@ -292,6 +292,12 @@ msgstr "Все хиты"
 msgid "Усі новинки"
 msgstr "Все новинки"
 
+msgid "Переглянути всі"
+msgstr "Смотреть все"
+
+msgid "У кошик"
+msgstr "В корзину"
+
 #: templates/catalog/list.html:39
 #, python-format
 msgid "Показано %(counter)s товар"

@@ -3,6 +3,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from django.db import models
 from django.urls import reverse
 
+from src.core.images import OptimizeWebpImagesMixin
 from src.core.models import SeoFieldsMixin, TimeStampedModel
 
 from .utils import format_weight
@@ -22,12 +23,18 @@ WEIGHT_STEP = Decimal("0.1")
 PIECE_STEP = Decimal("1")
 
 
-class Category(TimeStampedModel, SeoFieldsMixin):
+class Category(OptimizeWebpImagesMixin, TimeStampedModel, SeoFieldsMixin):
     """L1-категорія каталогу — адмін-керована (is_active), без підкатегорій у MVP."""
 
     name = models.CharField("Назва", max_length=255)
     slug = models.SlugField("Слаг", max_length=255, unique=True)
-    image = models.ImageField("Зображення", upload_to="categories/", null=True, blank=True)
+    image = models.ImageField(
+        "Зображення",
+        upload_to="categories/",
+        null=True,
+        blank=True,
+        help_text="JPEG/PNG/WebP/GIF → WebP, до 500 Кб.",
+    )
     sort_order = models.PositiveSmallIntegerField("Порядок", default=0)
     is_active = models.BooleanField("Активна", default=True)
 
@@ -163,9 +170,13 @@ class ProductWeightOption(TimeStampedModel):
         return f"{text} {self.get_unit_display()}"
 
 
-class ProductImage(TimeStampedModel):
+class ProductImage(OptimizeWebpImagesMixin, TimeStampedModel):
     product = models.ForeignKey(Product, verbose_name="Товар", on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField("Зображення", upload_to="products/")
+    image = models.ImageField(
+        "Зображення",
+        upload_to="products/",
+        help_text="JPEG/PNG/WebP/GIF → WebP, до 500 Кб.",
+    )
     alt = models.CharField("Alt-текст", max_length=255, blank=True)
     sort_order = models.PositiveSmallIntegerField("Порядок", default=0)
     is_primary = models.BooleanField("Головне фото", default=False)

@@ -5,13 +5,15 @@ from decouple import Csv, config
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
+from src.core.admin_url import ADMIN_URL_FALLBACK, resolve_admin_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config("SECRET_KEY")  # без default — прод падає без .env
 DEBUG = False
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", cast=Csv())
 
-ADMIN_URL = config("ADMIN_URL", default="admin/")
+ADMIN_URL = resolve_admin_url(config("ADMIN_URL", default=ADMIN_URL_FALLBACK))
 
 INSTALLED_APPS = [
     # Unfold перед django.contrib.admin

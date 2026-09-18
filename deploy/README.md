@@ -189,7 +189,7 @@ Renew: `certbot renew` + `docker compose -f docker-compose.yml -f docker-compose
 ## Перед першим go-live
 
 - [ ] `SECRET_KEY` / `POSTGRES_PASSWORD` згенеровані (`gen-env.sh`)
-- [ ] `ADMIN_URL` змінено з `admin/` (SEC-08)
+- [ ] `ADMIN_URL` не `admin/` (ERR-132); прод: `https://arctica.od.ua/kryha-desk/`
 - [ ] HTTP: `USE_HTTPS=False` до certbot; після — `True` + `SITE_PROTOCOL=https` + CSRF `https://`
 - [ ] `curl -sf -H "Host: 46.101.105.117" http://127.0.0.1/healthz/` → `ok` (до SSL)
 - [ ] Після SSL: `curl -sfk https://arctica.od.ua/healthz/` → `ok`

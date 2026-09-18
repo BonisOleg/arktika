@@ -123,7 +123,7 @@ class SearchView(ListView):
 
 
 class SearchSuggestView(View):
-    """HTMX-підказки пошуку в шапці: назви товарів → PDP."""
+    """HTMX-підказки шапки: назва/артикул, фото і ціна → PDP."""
 
     def get(self, request):
         query = request.GET.get("q", "").strip()

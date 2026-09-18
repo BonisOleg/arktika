@@ -23,6 +23,16 @@
   min-height: var(--header-h);
 }
 
+.header-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-left: auto;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .logo {
   display: inline-flex;
   align-items: center;
@@ -46,7 +56,7 @@
   color: var(--color-navy);
 }
 
-.nav-desktop > a,
+.nav-desktop>a,
 .nav-desktop .dropdown-toggle {
   flex-shrink: 0;
   white-space: nowrap;
@@ -188,24 +198,53 @@
   width: 2.75rem;
   height: 2.75rem;
   padding: 0.7rem;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .burger span {
   display: block;
+  width: 100%;
   height: 2px;
   background: var(--color-navy);
   border-radius: 2px;
+  transform-origin: center;
+  transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
+}
+
+.burger[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.burger[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.burger[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .mobile-nav {
   display: none;
-  border-top: 1px solid var(--color-line);
-  background: var(--color-white);
-  padding: var(--space-4);
 }
 
 .mobile-nav.is-open {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  z-index: 35;
+  top: calc(var(--header-h) + var(--safe-top));
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: var(--space-4);
+  padding-bottom: max(var(--space-4), var(--safe-bottom));
+  background: var(--color-white);
+  border-top: 1px solid var(--color-line);
 }
 
 .mobile-nav a {
@@ -221,9 +260,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: var(--space-3);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-line);
+  flex-shrink: 0;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+}
+
+body.is-scroll-lock {
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
 }
 
 .mobile-nav-cart {
@@ -504,13 +550,19 @@
 /* Tablet / laptop: повне меню без телефону — інакше phone+search+лінки
    зливаються в діапазоні ~770–1100. */
 @media (min-width: 768px) {
-  .header-inner {
+  .header-inner,
+  .header-toolbar {
     gap: var(--space-3);
   }
 }
 
 @media (min-width: 1024px) {
   .burger {
+    display: none;
+  }
+
+  .mobile-nav,
+  .mobile-nav.is-open {
     display: none;
   }
 

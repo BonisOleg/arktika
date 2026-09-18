@@ -1,11 +1,14 @@
-{% load static i18n %}<!doctype html>
+{% load static i18n %}
+<!doctype html>
 <html lang="{{ LANGUAGE_CODE }}">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="htmx-config" content='{"includeIndicatorStyles":false}'>
   <title>{% block title %}{{ page_title|default:"Арктика" }} — Арктика{% endblock %}</title>
-  <meta name="description" content="{% block meta_description %}Роздрібний інтернет-магазин рибної продукції власного виробництва Arctica: копчена, в'ялена, солена риба, ікра, пресерви, салати з доставкою по Україні.{% endblock %}">
+  <meta name="description"
+    content="{% block meta_description %}Роздрібний інтернет-магазин рибної продукції власного виробництва Arctica: копчена, в'ялена, солена риба, ікра, пресерви, салати з доставкою по Україні.{% endblock %}">
 
   {# Той самий файл, що й /favicon.ico на адмінці (без PNG 16/32 — вони перебивали .ico) #}
   <link rel="icon" href="{% static 'favicon/favicon.ico' %}?v=20260828b" type="image/x-icon" sizes="any">
@@ -19,22 +22,25 @@
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:type" content="website">
   {% block hreflang %}
-    {% for tag in hreflang_urls %}
-      <link rel="alternate" hreflang="{{ tag.lang }}" href="{{ tag.url }}">
-    {% endfor %}
-    <link rel="alternate" hreflang="x-default" href="{{ hreflang_default_url }}">
+  {% for tag in hreflang_urls %}
+  <link rel="alternate" hreflang="{{ tag.lang }}" href="{{ tag.url }}">
+  {% endfor %}
+  <link rel="alternate" hreflang="x-default" href="{{ hreflang_default_url }}">
   {% endblock %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;600;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}?v=20260828e">
   <link rel="stylesheet" href="{% static 'css/base.css' %}?v=20260828f">
-  <link rel="stylesheet" href="{% static 'css/layout.css' %}?v=20260918a">
-  <link rel="stylesheet" href="{% static 'css/header-dropdown.css' %}?v=20260918b">
+  <link rel="stylesheet" href="{% static 'css/layout.css' %}?v=20260918f">
+  <link rel="stylesheet" href="{% static 'css/header-dropdown.css' %}?v=20260918h">
   <link rel="stylesheet" href="{% static 'css/forms.css' %}?v=20260828e">
   <link rel="stylesheet" href="{% static 'css/pagination.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
+
 <body data-cart-summary-url="{% url 'commerce:cart_summary' %}">
   {% include "partials/header.html" %}
 
@@ -48,7 +54,8 @@
 
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
   {% load django_htmx %}{% django_htmx_script %}
-  <script src="{% static 'js/main.js' %}?v=20260918a" defer></script>
+  <script src="{% static 'js/main.js' %}?v=20260918c" defer></script>
   {% block extra_js %}{% endblock %}
 </body>
+
 </html>

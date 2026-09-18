@@ -16,34 +16,65 @@
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
-  const closeMobileNav = () => {
+  const setBurgerOpen = (open) => {
+    if (!burger) return;
+    burger.setAttribute("aria-expanded", open ? "true" : "false");
+    const label = burger.getAttribute(open ? "data-label-close" : "data-label-open");
+    if (label) burger.setAttribute("aria-label", label);
+  };
+
+  let scrollLockY = 0;
+
+  const syncScrollLock = () => {
+    const locked = Boolean(
+      mobileNav?.classList.contains("is-open") || cartDrawer?.classList.contains("is-open")
+    );
+    if (locked && !document.body.classList.contains("is-scroll-lock")) {
+      scrollLockY = window.scrollY;
+      document.body.classList.add("is-scroll-lock");
+      document.body.style.top = `-${scrollLockY}px`;
+    }
+    if (!locked && document.body.classList.contains("is-scroll-lock")) {
+      document.body.classList.remove("is-scroll-lock");
+      document.body.style.top = "";
+      window.scrollTo(0, scrollLockY);
+    }
+  };
+
+  const hideMobileNav = () => {
     mobileNav?.classList.remove("is-open");
-    burger?.setAttribute("aria-expanded", "false");
+    setBurgerOpen(false);
+  };
+
+  const closeMobileNav = () => {
+    hideMobileNav();
+    syncScrollLock();
   };
 
   burger?.addEventListener("click", () => {
     const open = mobileNav?.classList.toggle("is-open");
-    burger.setAttribute("aria-expanded", open ? "true" : "false");
+    setBurgerOpen(Boolean(open));
     if (open) {
       document.querySelectorAll(".search-suggest.is-open").forEach((el) => {
         el.classList.remove("is-open");
         el.hidden = true;
       });
     }
+    syncScrollLock();
   });
 
   const setCart = (open) => {
     if (!cartDrawer) return;
     cartDrawer.classList.toggle("is-open", open);
     cartDrawer.setAttribute("aria-hidden", open ? "false" : "true");
-    document.body.style.overflow = open ? "hidden" : "";
+    syncScrollLock();
   };
 
   const cartSummaryUrl = document.body.dataset.cartSummaryUrl;
 
   cartOpeners.forEach((el) =>
     el.addEventListener("click", () => {
-      closeMobileNav();
+      hideMobileNav();
       setCart(true);
       if (cartSummaryUrl) {
         htmx.ajax("GET", cartSummaryUrl, { target: "#cart-drawer-content" });
@@ -104,6 +135,12 @@
     const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
     return match ? decodeURIComponent(match[1]) : "";
   };
+  window.addEventListener("resize", () => {
+    if (window.matchMedia("(min-width: 1024px)").matches && mobileNav?.classList.contains("is-open")) {
+      closeMobileNav();
+    }
+  });
+
   document.body.addEventListener("htmx:configRequest", (e) => {
     if (e.detail.headers["X-CSRFToken"]) return;
     const token = csrfCookie("csrftoken");

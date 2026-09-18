@@ -104,9 +104,11 @@
 }
 
 .hero-cta {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   justify-content: center;
+  width: max-content;
+  max-width: 100%;
   gap: clamp(0.65rem, 2vw, 1rem);
   margin-top: 0.55rem;
   opacity: 0;
@@ -115,6 +117,8 @@
 }
 
 .hero-cta .btn {
+  width: 100%;
+  box-sizing: border-box;
   font-size: clamp(0.92rem, 2vw, 1.02rem);
   padding: clamp(0.65rem, 1.6vw, 0.8rem) clamp(1.15rem, 3vw, 1.4rem);
 }

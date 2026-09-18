@@ -25,53 +25,58 @@
       <a href="{% url 'content:contacts' %}">{% trans "Контакти" %}</a>
     </nav>
 
-    <form class="header-search" role="search" action="{% url 'catalog:search' %}" method="get" data-qa="search" data-search-suggest>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <label for="header-search-input" class="sr-only">{% trans "Пошук товарів" %}</label>
-      <input id="header-search-input" type="search" name="q" placeholder="{% trans 'Пошук…' %}"
-             autocomplete="off" enterkeyhint="search"
-             aria-autocomplete="list" aria-controls="header-search-suggest"
-             hx-get="{% url 'catalog:search_suggest' %}"
-             hx-trigger="keyup changed delay:250ms, search, focus"
-             hx-target="#header-search-suggest"
-             hx-swap="innerHTML">
-      <div class="search-suggest" id="header-search-suggest" role="listbox" aria-label="{% trans 'Підказки пошуку' %}" hidden></div>
-    </form>
+    <div class="header-toolbar">
+      <form class="header-search" role="search" action="{% url 'catalog:search' %}" method="get" data-qa="search" data-search-suggest>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <label for="header-search-input" class="sr-only">{% trans "Пошук товарів" %}</label>
+        <input id="header-search-input" type="search" name="q" placeholder="{% trans 'Пошук…' %}"
+               autocomplete="off" enterkeyhint="search"
+               aria-autocomplete="list" aria-controls="header-search-suggest"
+               hx-get="{% url 'catalog:search_suggest' %}"
+               hx-trigger="keyup changed delay:250ms, search, focus"
+               hx-target="#header-search-suggest"
+               hx-swap="innerHTML">
+        <div class="search-suggest" id="header-search-suggest" role="listbox" aria-label="{% trans 'Підказки пошуку' %}" hidden></div>
+      </form>
 
-    <div class="header-actions">
-      {% if site_settings.phone %}
-        <a class="phone-link" href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a>
-      {% endif %}
-      <div class="header-actions-desktop">
-        {% include "partials/lang_switch.html" %}
-        {% include "partials/header_cart.html" with count_id="cart-count" %}
+      <div class="header-actions">
+        {% if site_settings.phone %}
+          <a class="phone-link" href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a>
+        {% endif %}
+        <div class="header-actions-desktop">
+          {% include "partials/lang_switch.html" %}
+          {% include "partials/header_cart.html" with count_id="cart-count" %}
+        </div>
+        <button class="burger" type="button" data-burger aria-expanded="false"
+                aria-label="{% trans 'Меню' %}"
+                data-label-open="{% trans 'Меню' %}"
+                data-label-close="{% trans 'Закрити' %}"
+                data-qa="menu-open">
+          <span></span><span></span><span></span>
+        </button>
       </div>
-      <button class="burger" type="button" data-burger aria-expanded="false" aria-label="{% trans 'Меню' %}" data-qa="menu-open">
-        <span></span><span></span><span></span>
-      </button>
     </div>
   </div>
-
-  <nav class="mobile-nav" data-mobile-nav aria-label="{% trans 'Мобільна навігація' %}">
-    <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
-    <a href="{% url 'catalog:list' %}">{% trans "Каталог" %}</a>
-    <div class="mobile-nav-categories">
-      {% for category in header_categories %}
-        <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
-      {% endfor %}
-    </div>
-    <a href="{% url 'content:about' %}">{% trans "Про нас" %}</a>
-    <a href="{% url 'content:delivery' %}">{% trans "Доставка і оплата" %}</a>
-    <a href="{% url 'content:contacts' %}">{% trans "Контакти" %}</a>
-    {% if site_settings.phone %}
-      <a href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a>
-    {% endif %}
-    <div class="mobile-nav-tools">
-      {% include "partials/lang_switch.html" %}
-      {% include "partials/header_cart.html" with count_id="cart-count-nav" btn_class="mobile-nav-cart" show_label=True %}
-    </div>
-  </nav>
 </header>
+<nav class="mobile-nav" data-mobile-nav aria-label="{% trans 'Мобільна навігація' %}">
+  <div class="mobile-nav-tools">
+    {% include "partials/lang_switch.html" %}
+    {% include "partials/header_cart.html" with count_id="cart-count-nav" btn_class="mobile-nav-cart" show_label=True %}
+  </div>
+  <a href="{% url 'core:home' %}">{% trans "Головна" %}</a>
+  <a href="{% url 'catalog:list' %}">{% trans "Каталог" %}</a>
+  <div class="mobile-nav-categories">
+    {% for category in header_categories %}
+      <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+    {% endfor %}
+  </div>
+  <a href="{% url 'content:about' %}">{% trans "Про нас" %}</a>
+  <a href="{% url 'content:delivery' %}">{% trans "Доставка і оплата" %}</a>
+  <a href="{% url 'content:contacts' %}">{% trans "Контакти" %}</a>
+  {% if site_settings.phone %}
+    <a href="tel:{{ site_settings.phone|cut:' ' }}">{{ site_settings.phone }}</a>
+  {% endif %}
+</nav>

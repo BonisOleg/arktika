@@ -1,12 +1,28 @@
 {% load i18n %}
 {% for product in products %}
+  {% with option=product.default_option options=product.weight_options.all photo=product.images.first %}
   <a href="{{ product.get_absolute_url }}"
      class="search-suggest-item"
      role="option"
      data-qa="search-suggest-item">
-    <span class="search-suggest-name">{{ product.name }}</span>
-    <span class="search-suggest-cat">{{ product.category.name }}</span>
+    <span class="search-suggest-photo" aria-hidden="true">
+      {% if photo %}
+        <img src="{{ photo.image.url }}" alt="" width="48" height="48" decoding="async">
+      {% else %}
+        <span class="media-placeholder"></span>
+      {% endif %}
+    </span>
+    <span class="search-suggest-body">
+      <span class="search-suggest-name">{{ product.name }}</span>
+      <span class="search-suggest-cat">{{ product.category.name }}</span>
+    </span>
+    {% if option and product.min_price %}
+      <span class="search-suggest-price">
+        {% if options|length > 1 %}{% trans "від" %} {% endif %}{{ product.min_price }}&nbsp;₴<span class="search-suggest-unit">/{{ option.get_unit_display }}</span>
+      </span>
+    {% endif %}
   </a>
+  {% endwith %}
 {% empty %}
   {% if query|length >= 2 %}
     <p class="search-suggest-empty">{% trans "Нічого не знайдено" %}</p>

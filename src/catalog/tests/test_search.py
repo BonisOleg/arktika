@@ -52,3 +52,31 @@ class SearchMatchTests(TestCase):
     def test_suggest_uses_same_match(self):
         names = [p.name for p in suggest_products("икра")]
         self.assertIn("Ікра мойви", names)
+
+    def test_suggest_skips_description_only(self):
+        other = _product(name="Оселедець пряного посолу", slug="oseledets", sku="OS-1")
+        other.description = "Подавати з ікрою"
+        other.description_uk = other.description
+        other.save()
+        names = [p.name for p in suggest_products("икра")]
+        self.assertIn("Ікра мойви", names)
+        self.assertNotIn(other.name, names)
+
+    def test_suggest_ranks_name_prefix_first(self):
+        salad = _product(name="Салат ікра червона", slug="salat-ikra", sku="SAL-IK")
+        ranked = [p.name for p in suggest_products("ікра")]
+        self.assertLess(ranked.index(self.ikra.name), ranked.index(salad.name))
+
+    def test_suggest_short_query_is_prefix_only(self):
+        herring = _product(name="Оселедець пряного посолу", slug="oseledets", sku="OS-1")
+        noise = _product(name="Снеки з лосося", slug="sneky-losos", sku="SN-1")
+        names = [p.name for p in suggest_products("ос")]
+        self.assertIn(herring.name, names)
+        self.assertNotIn(noise.name, names)
+
+    def test_suggest_html_has_photo_and_price(self):
+        html = self.client.get("/catalog/search/suggest/", {"q": "ікра"}).content.decode()
+        self.assertIn("search-suggest-photo", html)
+        self.assertIn("search-suggest-price", html)
+        self.assertIn("100", html)
+        self.assertIn("search-suggest-item", html)

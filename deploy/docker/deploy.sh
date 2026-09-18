@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Production deploy on DigitalOcean Droplet (HTTP-first, django-droplet-http-first).
+# Production deploy on DigitalOcean Droplet (HTTP-first → SSL if cert exists).
 # Usage on server: bash deploy/docker/deploy.sh
 # Requires .env (gen-env.sh). Never merges docker-compose.override.yml.
 set -euo pipefail
@@ -7,8 +7,6 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
-# Explicit file list — ignore auto-merged override.yml if someone recreates it.
-export COMPOSE_FILE="docker-compose.yml:docker-compose.prod.yml"
 COMPOSE=(docker compose)
 SERVICES=(db backend nginx)
 
@@ -63,9 +61,36 @@ if ! grep -E '^CSRF_TRUSTED_ORIGINS=' .env | grep -q "$DROPLET_IP"; then
   exit 1
 fi
 
+SITE_DOMAIN="$(read_env SITE_DOMAIN)"
+SSL_ENABLED=0
+if [[ -n "$SITE_DOMAIN" && ! "$SITE_DOMAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  if [[ -f "/etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem" ]]; then
+    SSL_ENABLED=1
+  fi
+fi
+
+if [[ "$SSL_ENABLED" -eq 1 ]]; then
+  export COMPOSE_FILE="docker-compose.yml:docker-compose.prod.yml:docker-compose.ssl.yml"
+  sed "s/example.com/${SITE_DOMAIN}/g" \
+    deploy/nginx/default.prod.conf.example > deploy/nginx/default.prod.conf
+  if ! grep -E '^CSRF_TRUSTED_ORIGINS=' .env | grep -q "https://${SITE_DOMAIN}"; then
+    echo "FATAL: CSRF_TRUSTED_ORIGINS must include https://${SITE_DOMAIN} after certbot"
+    exit 1
+  fi
+else
+  export COMPOSE_FILE="docker-compose.yml:docker-compose.prod.yml"
+fi
+
 if grep -qE '^USE_HTTPS=True' .env; then
-  echo "FATAL: USE_HTTPS=True — healthz/cookies break until certbot. Set False for HTTP-first."
-  exit 1
+  if [[ "$SSL_ENABLED" -ne 1 ]]; then
+    echo "FATAL: USE_HTTPS=True without /etc/letsencrypt/live/${SITE_DOMAIN:-?}/fullchain.pem"
+    echo "First: bash deploy/docker/issue-cert.sh"
+    exit 1
+  fi
+  if ! grep -qE '^SITE_PROTOCOL=https' .env; then
+    echo "FATAL: USE_HTTPS=True requires SITE_PROTOCOL=https"
+    exit 1
+  fi
 fi
 
 if [[ -f docker-compose.override.yml ]]; then
@@ -100,11 +125,20 @@ fi
 echo "==> start nginx"
 "${COMPOSE[@]}" up -d --remove-orphans nginx || true
 
-if curl -sf -H "Host: ${DROPLET_IP}" http://127.0.0.1/healthz/ >/dev/null; then
-  echo "HTTP /healthz/ OK (Host: ${DROPLET_IP})"
+if [[ "$SSL_ENABLED" -eq 1 ]]; then
+  if curl -sfk -H "Host: ${SITE_DOMAIN}" https://127.0.0.1/healthz/ >/dev/null; then
+    echo "HTTPS /healthz/ OK (Host: ${SITE_DOMAIN})"
+  else
+    echo "WARN: HTTPS /healthz/ via nginx failed — check logs"
+    "${COMPOSE[@]}" logs --tail=30 nginx backend || true
+  fi
 else
-  echo "WARN: HTTP /healthz/ via nginx failed — check logs"
-  "${COMPOSE[@]}" logs --tail=30 nginx backend || true
+  if curl -sf -H "Host: ${DROPLET_IP}" http://127.0.0.1/healthz/ >/dev/null; then
+    echo "HTTP /healthz/ OK (Host: ${DROPLET_IP})"
+  else
+    echo "WARN: HTTP /healthz/ via nginx failed — check logs"
+    "${COMPOSE[@]}" logs --tail=30 nginx backend || true
+  fi
 fi
 
 echo "==> inventory"
@@ -126,7 +160,12 @@ if [[ "$missing" -ne 0 ]]; then
 fi
 
 echo "All ${#SERVICES[@]} services are running."
-echo "Site: http://${DROPLET_IP}/"
+if [[ "$SSL_ENABLED" -eq 1 ]]; then
+  echo "Site: https://${SITE_DOMAIN}/"
+else
+  echo "Site: http://${DROPLET_IP}/"
+  echo "HTTPS: після DNS — bash deploy/docker/issue-cert.sh, потім USE_HTTPS=True і знову deploy.sh"
+fi
 echo "Next (optional data): from Mac ./deploy/docker/sync-data.sh push root@${DROPLET_IP}:/var/www/arctica --yes"
 echo "Or seed: ${COMPOSE[*]} exec backend python3 manage.py seed_demo"
 echo "Admin: ${COMPOSE[*]} exec -T backend python3 manage.py createsuperuser"

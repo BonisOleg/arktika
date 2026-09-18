@@ -4,13 +4,13 @@
 
 Канон: **django-droplet-http-first** → пізніше SSL (**django-docker-ssl**).
 
-| | Тест | Прод (до DNS) |
+| | Тест | Прод |
 |---|---|---|
 | SSH | `arktika` | `arctica-prod` |
 | IP | `157.230.99.135` | `46.101.105.117` |
 | Шлях | `/var/www/arktika` | `/var/www/arctica` |
-| Домен | — | `arctica.od.ua` (A ще може не вказувати на IP) |
-| URL | http://157.230.99.135/ | http://46.101.105.117/ |
+| Домен | — | `arctica.od.ua` (A @ і www → прод IP) |
+| URL | http://157.230.99.135/ | http://46.101.105.117/ → після certbot https://arctica.od.ua/ |
 
 ## Локальний запуск (override + runserver)
 
@@ -53,8 +53,8 @@ bash deploy/docker/deploy.sh
 ./deploy/docker/sync-data.sh push-pg arctica-prod:/var/www/arctica --yes
 ```
 
-Сайт до DNS: http://46.101.105.117/  
-Після A-запису: certbot + `USE_HTTPS=True` (розділ SSL нижче).
+Сайт по IP: http://46.101.105.117/  
+HTTPS: розділ SSL нижче (`issue-cert.sh` + `USE_HTTPS=True`).
 
 ## Тестовий сервер — HTTP по IP (перший залив)
 
@@ -131,29 +131,47 @@ docker compose up -d --build
 
 `deploy.sh` виставляє `COMPOSE_FILE` сам і **ігнорує** `override.yml`.
 
-## Перехід на HTTPS (після certbot) — `django-docker-ssl`
+## Перехід на HTTPS — `django-docker-ssl`
 
-1. DNS: `A @` і `A www` → `157.230.99.135`, дочекатись поширення.
-2. HTTP-деплой уже працює на домені.
-3. Certbot **на хості** (не в контейнері):
+TLS у контейнері nginx, Gunicorn лише HTTP. `SECURE_SSL_REDIRECT` у Django **завжди False** (інакше `/healthz/` ловить 301). Certbot **на хості**, не в контейнері. Compose/nginx **не патчити на дроплеті**.
+
+`deploy.sh` підключає `docker-compose.ssl.yml` **лише** якщо є `/etc/letsencrypt/live/$SITE_DOMAIN/fullchain.pem`. Без сертифіката деплой лишається HTTP (`:80`).
+
+1. DNS: `A @` і `A www` → `46.101.105.117` (вже має бути). HTTP по `http://arctica.od.ua/` працює.
+2. `git pull` на проді (має бути `docker-compose.ssl.yml` + `default.prod.conf.example`).
+3. Сертифікат:
 
    ```bash
-   export COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
-   docker compose stop nginx
-   apt install -y certbot
-   certbot certonly --standalone -d <домен> -d www.<домен> --agree-tos -m admin@<домен>
+   ssh arctica-prod
+   cd /var/www/arctica
+   bash deploy/docker/issue-cert.sh
    ```
 
-4. Скопіювати `deploy/nginx/default.prod.conf.example` → `deploy/nginx/default.prod.conf`, замінити `example.com`.
-5. У `docker-compose.prod.yml` для `nginx` додати `443:443` і mount `/etc/letsencrypt` + prod conf (див. приклад у `default.prod.conf.example` / історію README).
-6. У `.env`: `USE_HTTPS=True`, `SITE_PROTOCOL=https`, `CSRF_TRUSTED_ORIGINS=https://<домен>,https://www.<домен>`, `ALLOWED_HOSTS` + домен, `SITE_DOMAIN=<домен>`.
-7. Зміни в git → `git pull` на сервері (не правити compose лише на дроплеті).
-8. `bash deploy/docker/deploy.sh` (або compose up).
-9. `curl -sfk https://<домен>/healthz/`, `certbot renew --dry-run`.
+4. У `.env`:
+
+   ```env
+   USE_HTTPS=True
+   SITE_PROTOCOL=https
+   CSRF_TRUSTED_ORIGINS=https://arctica.od.ua,https://www.arctica.od.ua,http://46.101.105.117
+   ```
+
+   `ALLOWED_HOSTS` і `SITE_DOMAIN=arctica.od.ua` уже з `gen-env.sh`. IP у CSRF лишаємо (доступ по IP до редіректу).
+5. `bash deploy/docker/deploy.sh` — згенерує `deploy/nginx/default.prod.conf` (gitignored) і підніме `:443`.
+6. Перевірка:
+
+   ```bash
+   curl -sfk https://arctica.od.ua/healthz/
+   curl -sI http://arctica.od.ua/ | head -5
+   certbot renew --dry-run
+   ```
+
+Renew: `certbot renew` + `docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ssl.yml exec nginx nginx -s reload`.
+
+Повторний сертифікат без downtime (після першого): `certbot certonly --webroot -w /var/www/certbot -d arctica.od.ua -d www.arctica.od.ua`.
 
 ### Чому `USE_HTTPS=False` до certbot
 
-Якщо `SECURE_SSL_REDIRECT=True` без TLS у nginx, внутрішній `/healthz/` отримує `301` і healthcheck падає. У `config/settings/production.py` SSL-прапорці зав’язані на `USE_HTTPS`.
+`USE_HTTPS` вмикає Secure-cookies і HSTS, не редірект Django. Без сертифіката `deploy.sh` з `USE_HTTPS=True` падає FATAL. Редірект http→https робить nginx після появи `fullchain.pem`.
 
 ## Типові проблеми
 
@@ -165,12 +183,14 @@ docker compose up -d --build
 | 400 DisallowedHost | IP немає в `ALLOWED_HOSTS` | додати IP |
 | develop/runserver на Droplet | є `docker-compose.override.yml` | видалити; `deploy.sh` уже ігнорує через `COMPOSE_FILE` |
 | DB connection refused | backend раніше за db | `depends_on: condition: service_healthy` |
-| unhealthy / 301 | `USE_HTTPS=True` без TLS | `USE_HTTPS=False` |
+| unhealthy / 301 | Django `SECURE_SSL_REDIRECT` | лишати `False`; TLS лише в nginx |
+| nginx crash після SSL | немає `fullchain.pem`, а prod conf змонтовано | `deploy.sh` підключає ssl.yml лише якщо є сертифікат |
 
 ## Перед першим go-live
 
 - [ ] `SECRET_KEY` / `POSTGRES_PASSWORD` згенеровані (`gen-env.sh`)
 - [ ] `ADMIN_URL` змінено з `admin/` (SEC-08)
-- [ ] `USE_HTTPS=False`, `SITE_PROTOCOL=http` для IP
-- [ ] `curl -sf -H "Host: 157.230.99.135" http://127.0.0.1/healthz/` → `ok`
-- [ ] WayForPay / Telegram / reCAPTCHA — за потреби; WFP по IP обмежений (потрібен домен)
+- [ ] HTTP: `USE_HTTPS=False` до certbot; після — `True` + `SITE_PROTOCOL=https` + CSRF `https://`
+- [ ] `curl -sf -H "Host: 46.101.105.117" http://127.0.0.1/healthz/` → `ok` (до SSL)
+- [ ] Після SSL: `curl -sfk https://arctica.od.ua/healthz/` → `ok`
+- [ ] WayForPay / Telegram / reCAPTCHA — за потреби; WFP live потребує HTTPS-домен

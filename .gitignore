@@ -6,6 +6,7 @@ __pycache__/
 /env/
 .env
 docker-compose.override.yml
+deploy/nginx/default.prod.conf
 /staticfiles/
 /media/
 deploy/data/*.json

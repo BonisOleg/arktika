@@ -1,0 +1,14 @@
+# Підключає deploy.sh, лише якщо є Let's Encrypt для SITE_DOMAIN.
+# Не патчити на дроплеті — лише git.
+
+services:
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/default.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media

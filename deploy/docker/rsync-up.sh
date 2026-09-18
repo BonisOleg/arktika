@@ -40,6 +40,7 @@ rsync -avz --delete \
   --exclude 'media/' \
   --exclude 'deploy/data/*.json' \
   --exclude 'deploy/data/*.tar.gz' \
+  --exclude 'deploy/data/*.sql' \
   --exclude 'postgres_data/' \
   --exclude '.DS_Store' \
   --exclude 'mockup/' \

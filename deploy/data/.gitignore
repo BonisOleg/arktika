@@ -1,3 +1,4 @@
 *.json
 *.tar.gz
+*.sql
 !.gitkeep

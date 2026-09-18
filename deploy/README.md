@@ -4,11 +4,13 @@
 
 Канон: **django-droplet-http-first** → пізніше SSL (**django-docker-ssl**).
 
-| | |
-|---|---|
-| Тестовий Droplet IP | `157.230.99.135` |
-| Шлях на сервері | `/var/www/arctica` |
-| URL (HTTP) | http://157.230.99.135/ |
+| | Тест | Прод (до DNS) |
+|---|---|---|
+| SSH | `arktika` | `arctica-prod` |
+| IP | `157.230.99.135` | `46.101.105.117` |
+| Шлях | `/var/www/arktika` | `/var/www/arctica` |
+| Домен | — | `arctica.od.ua` (A ще може не вказувати на IP) |
+| URL | http://157.230.99.135/ | http://46.101.105.117/ |
 
 ## Локальний запуск (override + runserver)
 
@@ -27,6 +29,32 @@ docker compose up --build
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
+
+## Прод — HTTP по IP (доки DNS `arctica.od.ua` не вказує на droplet)
+
+Тестовий стек **не чіпати**. Дані клієнта знімаються з тесту (`pg_dump` + media) і відновлюються на проді.
+
+```bash
+# 1) знімок тесту (не змінює тестовий сайт)
+./deploy/docker/sync-data.sh pull-remote arktika:/var/www/arktika
+
+# 2) код на прод
+REMOTE_PATH=/var/www/arctica ./deploy/docker/rsync-up.sh arctica-prod
+
+# 3) на проді (один раз)
+ssh arctica-prod
+cd /var/www/arctica
+bash deploy/docker/install-docker.sh
+DROPLET_IP=46.101.105.117 SITE_DOMAIN=arctica.od.ua bash deploy/docker/gen-env.sh
+# ключі Telegram/WFP/NP з тесту — merge-env-keys.py (не копіювати SECRET_KEY/DB)
+bash deploy/docker/deploy.sh
+
+# 4) з Mac — відновити стан тесту
+./deploy/docker/sync-data.sh push-pg arctica-prod:/var/www/arctica --yes
+```
+
+Сайт до DNS: http://46.101.105.117/  
+Після A-запису: certbot + `USE_HTTPS=True` (розділ SSL нижче).
 
 ## Тестовий сервер — HTTP по IP (перший залив)
 
@@ -84,10 +112,13 @@ DJANGO_SETTINGS_MODULE=config.settings.production
 DEBUG=False
 USE_HTTPS=False
 SITE_PROTOCOL=http
-SITE_DOMAIN=157.230.99.135
-ALLOWED_HOSTS=157.230.99.135,127.0.0.1,localhost,backend
-CSRF_TRUSTED_ORIGINS=http://157.230.99.135
+DROPLET_IP=46.101.105.117
+SITE_DOMAIN=arctica.od.ua
+ALLOWED_HOSTS=46.101.105.117,arctica.od.ua,www.arctica.od.ua,127.0.0.1,localhost,backend
+CSRF_TRUSTED_ORIGINS=http://46.101.105.117,http://arctica.od.ua,http://www.arctica.od.ua
 ```
+
+Тест — той самий шаблон з `DROPLET_IP=157.230.99.135` і `SITE_DOMAIN` = IP.
 
 Порожній `CSRF_TRUSTED_ORIGINS` ламає POST (checkout/контакти) у браузері по IP.
 

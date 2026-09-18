@@ -16,9 +16,20 @@
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
+  const closeMobileNav = () => {
+    mobileNav?.classList.remove("is-open");
+    burger?.setAttribute("aria-expanded", "false");
+  };
+
   burger?.addEventListener("click", () => {
     const open = mobileNav?.classList.toggle("is-open");
     burger.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) {
+      document.querySelectorAll(".search-suggest.is-open").forEach((el) => {
+        el.classList.remove("is-open");
+        el.hidden = true;
+      });
+    }
   });
 
   const setCart = (open) => {
@@ -32,6 +43,7 @@
 
   cartOpeners.forEach((el) =>
     el.addEventListener("click", () => {
+      closeMobileNav();
       setCart(true);
       if (cartSummaryUrl) {
         htmx.ajax("GET", cartSummaryUrl, { target: "#cart-drawer-content" });
@@ -43,6 +55,7 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       setCart(false);
+      closeMobileNav();
       dropdown?.classList.remove("is-open");
       document.querySelectorAll(".search-suggest.is-open").forEach((el) => {
         el.classList.remove("is-open");

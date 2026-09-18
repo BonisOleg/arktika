@@ -3,6 +3,51 @@ from django.db.models import Case, F, IntegerField, Min, QuerySet, When
 
 from .models import Category, Product
 
+# і/ї/є/ґ ↔ и/е/г — інакше «икра» не знаходить «Ікра», «скумбрия» — «Скумбрія».
+_CYR_FOLD = str.maketrans({"і": "и", "ї": "и", "є": "е", "ґ": "г"})
+
+
+def _fold_cyr(text: str) -> str:
+    return (text or "").casefold().translate(_CYR_FOLD)
+
+
+def _needle_stems(query: str) -> list[str]:
+    needle = _fold_cyr(query).strip()
+    if not needle:
+        return []
+    stems = [needle]
+    if len(needle) >= 4:
+        trimmed = needle.rstrip("ьъйы")
+        if len(trimmed) >= 4 and trimmed not in stems:
+            stems.append(trimmed)
+        short = needle[:-1]
+        if len(short) >= 4 and short not in stems:
+            stems.append(short)
+    return stems
+
+
+def _matches_haystack(query: str, *parts: str) -> bool:
+    hay = _fold_cyr(" ".join(p for p in parts if p))
+    if not hay:
+        return False
+    return any(stem in hay for stem in _needle_stems(query))
+
+
+def _product_search_parts(product: Product) -> list[str]:
+    return [
+        product.name,
+        getattr(product, "name_uk", "") or "",
+        getattr(product, "name_ru", "") or "",
+        product.description,
+        getattr(product, "description_uk", "") or "",
+        getattr(product, "description_ru", "") or "",
+        *(option.sku or "" for option in product.weight_options.all()),
+    ]
+
+
+def _product_matches_query(product: Product, query: str) -> bool:
+    return _matches_haystack(query, *_product_search_parts(product))
+
 # price_* — Min(weight_options.price) = те саме «від … грн» на картці.
 # Прямий order_by(weight_options__price) дає JOIN → дублікати й кривий порядок.
 SORT_OPTIONS = {
@@ -43,23 +88,16 @@ def get_catalog_products(
 
 
 def _match_ids_by_name_or_sku(query: str) -> list[int]:
-    """Unicode casefold — Postgres lc_collate=C не згортає кирилицю в ILIKE/lower()."""
-    needle = query.casefold()
+    """Кирилиця в Python (Postgres lc_collate=C не згортає ILIKE) + uk/ru поля."""
     matched: list[int] = []
     qs = (
         Product.objects.filter(is_available=True)
         .prefetch_related("weight_options")
-        .only("id", "name")
         .order_by("name")
     )
-    for product in qs.iterator(chunk_size=200):
-        if needle in product.name.casefold():
+    for product in qs:
+        if _product_matches_query(product, query):
             matched.append(product.id)
-            continue
-        for option in product.weight_options.all():
-            if needle in (option.sku or "").casefold():
-                matched.append(product.id)
-                break
     return matched
 
 
@@ -82,19 +120,19 @@ def search_products(query: str) -> QuerySet[Product]:
 
 
 def suggest_products(query: str, *, limit: int = 8) -> list[Product]:
-    """Підказки для шапки: назви доступних товарів, від 2 символів."""
+    """Підказки для шапки: той самий матч, що й /search/, від 2 символів."""
     query = (query or "").strip()
     if len(query) < 2:
         return []
-    needle = query.casefold()
     matches: list[Product] = []
     qs = (
         Product.objects.filter(is_available=True)
         .select_related("category")
+        .prefetch_related("weight_options")
         .order_by("name")
     )
-    for product in qs.iterator(chunk_size=200):
-        if needle in product.name.casefold():
+    for product in qs:
+        if _product_matches_query(product, query):
             matches.append(product)
             if len(matches) >= limit:
                 break

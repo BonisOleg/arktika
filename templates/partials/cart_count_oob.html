@@ -1,5 +1,6 @@
 {% load i18n %}
 {% if request.htmx %}
-{# OOB-оновлення бейджа в хедері після add/update/remove (htmx). #}
+{# OOB-оновлення бейджа в хедері та в мобільному меню після add/update/remove. #}
 <span id="cart-count" class="cart-count{% if not count %} is-empty{% endif %}" data-qa="cart-count" hx-swap-oob="true">{% if count %}{{ count }}{% endif %}</span>
+<span id="cart-count-nav" class="cart-count{% if not count %} is-empty{% endif %}" data-qa="cart-count" hx-swap-oob="true">{% if count %}{{ count }}{% endif %}</span>
 {% endif %}

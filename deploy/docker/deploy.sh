@@ -11,7 +11,11 @@ cd "$ROOT"
 export COMPOSE_FILE="docker-compose.yml:docker-compose.prod.yml"
 COMPOSE=(docker compose)
 SERVICES=(db backend nginx)
-DROPLET_IP="157.230.99.135"
+
+read_env() {
+  local key="$1"
+  grep -E "^${key}=" .env | tail -1 | cut -d= -f2- | tr -d '\r' | sed 's/^["'\'']//;s/["'\'']$//'
+}
 
 free_host_ports() {
   if command -v systemctl >/dev/null 2>&1; then
@@ -35,14 +39,27 @@ if [[ ! -f .env ]]; then
   exit 1
 fi
 
-# Лише значення змінних (коментарі з текстом DROPLET_IP ігноруємо).
-if grep -E '^(ALLOWED_HOSTS|CSRF_TRUSTED_ORIGINS)=' .env | grep -q 'DROPLET_IP'; then
-  echo "FATAL: literal DROPLET_IP in ALLOWED_HOSTS/CSRF_TRUSTED_ORIGINS. Put real IPv4."
+DROPLET_IP="$(read_env DROPLET_IP)"
+if [[ -z "$DROPLET_IP" ]]; then
+  DROPLET_IP="$(read_env ALLOWED_HOSTS | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -1 || true)"
+fi
+if [[ -z "$DROPLET_IP" ]]; then
+  echo "FATAL: set DROPLET_IP=x.x.x.x in .env (або IPv4 у ALLOWED_HOSTS)"
   exit 1
 fi
 
-if ! grep -E '^(ALLOWED_HOSTS|CSRF_TRUSTED_ORIGINS|SITE_DOMAIN)=' .env | grep -q "$DROPLET_IP"; then
-  echo "FATAL: expected IP $DROPLET_IP missing from ALLOWED_HOSTS/CSRF/SITE_DOMAIN"
+# Лише значення змінних (коментарі з текстом DROPLET_IP ігноруємо).
+if grep -E '^(ALLOWED_HOSTS|CSRF_TRUSTED_ORIGINS|DROPLET_IP)=' .env | grep -q '__DROPLET_IP__'; then
+  echo "FATAL: placeholder __DROPLET_IP__ left in .env. Re-run gen-env.sh"
+  exit 1
+fi
+
+if ! grep -E '^ALLOWED_HOSTS=' .env | grep -q "$DROPLET_IP"; then
+  echo "FATAL: ALLOWED_HOSTS must include $DROPLET_IP (доступ до DNS)"
+  exit 1
+fi
+if ! grep -E '^CSRF_TRUSTED_ORIGINS=' .env | grep -q "$DROPLET_IP"; then
+  echo "FATAL: CSRF_TRUSTED_ORIGINS must include http://$DROPLET_IP"
   exit 1
 fi
 

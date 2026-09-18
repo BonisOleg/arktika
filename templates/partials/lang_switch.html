@@ -1,0 +1,15 @@
+{% load i18n i18n_extras %}
+<div class="lang-switch" aria-label="{% trans 'Мова' %}" data-qa="lang-switch">
+  {% get_current_language as CURRENT_LANGUAGE %}
+  {% get_available_languages as AVAILABLE_LANGUAGES %}
+  {% for lang_code, lang_name in AVAILABLE_LANGUAGES %}
+    <form action="{% url 'set_language' %}" method="post" class="lang-switch-form">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% language_next lang_code %}">
+      <input type="hidden" name="language" value="{{ lang_code }}">
+      <button type="submit" class="{% if lang_code == CURRENT_LANGUAGE %}is-active{% endif %}" hreflang="{{ lang_code }}">
+        {{ lang_code|upper }}
+      </button>
+    </form>
+  {% endfor %}
+</div>

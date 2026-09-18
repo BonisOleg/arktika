@@ -63,17 +63,26 @@
 
 .header-search {
   position: relative;
-  display: none;
+  display: block;
+  flex: 1 1 7rem;
+  min-width: 0;
+  max-width: 18rem;
 }
 
 .header-search input {
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   padding: 0.5rem 0.85rem 0.5rem 2.2rem;
   border: 1px solid var(--color-line);
   border-radius: 999px;
   background: var(--color-snow);
-  font-size: 0.9rem;
+  font-size: 1rem;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.header-search input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
 }
 
 .header-search input:focus {
@@ -97,8 +106,10 @@
   top: calc(100% + 0.35rem);
   left: 0;
   right: 0;
-  min-width: min(18rem, calc(100vw - 2rem));
-  max-height: min(18rem, 50vh);
+  width: 100%;
+  min-width: 0;
+  max-height: min(16rem, 40vh);
+  max-height: min(16rem, 40dvh);
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -156,16 +167,6 @@
   color: var(--color-muted);
 }
 
-.mobile-search {
-  padding: var(--space-3) 0;
-}
-
-.mobile-search .header-search {
-  display: block;
-  width: 100%;
-  margin-left: 0;
-}
-
 .mobile-nav-categories {
   display: grid;
   gap: 0.15rem;
@@ -179,27 +180,37 @@
   border-bottom: none;
 }
 
-/* Пошук у шапці разом із desktop-nav (≥1024). Нижче — лише в mobile-nav. */
+@media (min-width: 768px) {
+  .header-search {
+    flex-basis: 10rem;
+  }
+
+  .search-suggest {
+    min-width: min(18rem, calc(100vw - 3rem));
+    width: max-content;
+    max-width: min(22rem, calc(100vw - 3rem));
+    right: 0;
+    left: auto;
+  }
+}
+
 @media (min-width: 1024px) {
   .header-search {
-    display: block;
+    flex: 0 1 9.5rem;
     width: 9.5rem;
-    flex-shrink: 1;
     min-width: 6.5rem;
     margin-left: 0.5rem;
   }
 
-  .nav-desktop .search-suggest {
-    left: auto;
-    right: 0;
-    width: max-content;
-    min-width: 16rem;
-    max-width: min(22rem, calc(100vw - 2rem));
+  .header-search input {
+    min-height: 2.5rem;
+    font-size: 0.9rem;
   }
 }
 
 @media (min-width: 1200px) {
   .header-search {
+    flex-basis: 14rem;
     width: 14rem;
     min-width: 10rem;
     margin-left: 0.75rem;
@@ -208,6 +219,7 @@
 
 @media (min-width: 1400px) {
   .header-search {
+    flex-basis: 18rem;
     width: 18rem;
   }
 }

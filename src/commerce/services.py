@@ -148,7 +148,8 @@ def place_order(*, session_key: str, cart: Cart, customer_data: dict) -> Order:
     cart.status = "converted"
     cart.save(update_fields=["status", "updated_at"])
 
-    _notify_new_order(order)
+    order_id = order.pk
+    transaction.on_commit(lambda oid=order_id: _notify_new_order(oid))
     return order
 
 
@@ -202,12 +203,11 @@ def prepare_payment_attempt(order: Order) -> Payment:
     return payment
 
 
-def _notify_new_order(order: Order) -> None:
+def _notify_new_order(order_id: int) -> None:
     try:
         from src.core.services.telegram import notify_new_order
 
-        # items уже в БД після bulk_create; підвантажуємо для тексту сповіщення
-        order = Order.objects.prefetch_related("items").get(pk=order.pk)
+        order = Order.objects.prefetch_related("items").get(pk=order_id)
         notify_new_order(order)
     except Exception:  # noqa: BLE001 — сповіщення не повинне ламати checkout
-        logger.exception("Не вдалося надіслати сповіщення про замовлення %s", order.order_number)
+        logger.exception("Не вдалося надіслати сповіщення про замовлення %s", order_id)

@@ -168,6 +168,7 @@ def apply_wayforpay_result(payload: dict, *, source: str = "webhook") -> bool:
             payment.raw_callback = payload
 
             order = payment.order
+            notify_kind = None
             if transaction_status in APPROVED_STATUSES:
                 payment.paid_at = timezone.now()
                 order.payment_status = "paid"
@@ -177,6 +178,7 @@ def apply_wayforpay_result(payload: dict, *, source: str = "webhook") -> bool:
                     status="paid",
                     note=f"WayForPay: Approved ({source})",
                 )
+                notify_kind = "paid"
             elif transaction_status in DECLINED_STATUSES:
                 order.payment_status = "failed"
                 OrderStatusLog.objects.create(
@@ -184,9 +186,20 @@ def apply_wayforpay_result(payload: dict, *, source: str = "webhook") -> bool:
                     status="payment_failed",
                     note=f"WayForPay: {transaction_status} ({source})",
                 )
+                notify_kind = "failed"
 
             payment.save()
             order.save(update_fields=["payment_status", "status", "updated_at"])
+
+            if notify_kind:
+                order_id = order.pk
+                approved = notify_kind == "paid"
+                wfp_status = transaction_status
+                transaction.on_commit(
+                    lambda oid=order_id, ok=approved, st=wfp_status: _notify_payment_result(
+                        oid, approved=ok, provider_status=st
+                    )
+                )
         logger.info(
             "WayForPay %s: orderReference=%s status=%s",
             source,
@@ -197,3 +210,15 @@ def apply_wayforpay_result(payload: dict, *, source: str = "webhook") -> bool:
     except Payment.DoesNotExist:
         logger.warning("WayForPay %s: orderReference=%s не знайдено", source, order_reference)
         return False
+
+
+def _notify_payment_result(order_id: int, *, approved: bool, provider_status: str) -> None:
+    try:
+        from src.core.services.telegram import notify_payment_result
+
+        from .models import Order
+
+        order = Order.objects.get(pk=order_id)
+        notify_payment_result(order, approved=approved, provider_status=provider_status)
+    except Exception:  # noqa: BLE001 — сповіщення не повинне ламати webhook
+        logger.exception("Не вдалося надіслати Telegram про оплату замовлення %s", order_id)

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n static cms_html %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/content.css' %}?v=20260828m">
+  <link rel="stylesheet" href="{% static 'css/content.css' %}?v=20260921a">
 {% endblock %}
 
 {% block title %}{{ contacts_page.seo_title|default:page_title }} — Арктика{% endblock %}
@@ -20,7 +20,7 @@
   <div class="contacts-grid">
     <div class="contacts-card">
       {% if contacts_page.intro_text %}
-        <div class="content-page-body">{{ contacts_page.intro_text|linebreaks }}</div>
+        <div class="content-page-body cms-html">{{ contacts_page.intro_text|cms_html }}</div>
       {% endif %}
       <dl class="contacts-info-list">
         {% if contacts_page.phone %}

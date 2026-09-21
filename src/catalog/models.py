@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse
 
 from src.core.images import OptimizeWebpImagesMixin
-from src.core.models import SeoFieldsMixin, TimeStampedModel
+from src.core.models import SanitizedHtmlMixin, SeoFieldsMixin, TimeStampedModel
 
 from .utils import format_weight
 
@@ -50,8 +50,10 @@ class Category(OptimizeWebpImagesMixin, TimeStampedModel, SeoFieldsMixin):
         return reverse("catalog:category", kwargs={"slug": self.slug})
 
 
-class Product(TimeStampedModel, SeoFieldsMixin):
+class Product(SanitizedHtmlMixin, TimeStampedModel, SeoFieldsMixin):
     """Товар. Власної ціни/SKU немає — завжди через ProductWeightOption ([[600i3]])."""
+
+    html_fields = ("description",)
 
     category = models.ForeignKey(Category, verbose_name="Категорія", on_delete=models.PROTECT, related_name="products")
     name = models.CharField("Назва", max_length=255)

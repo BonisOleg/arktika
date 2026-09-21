@@ -1,6 +1,8 @@
 """Selectors — лише читання (ecommerce_business_logic_skill), без мутацій."""
 from django.db.models import Case, F, IntegerField, Min, QuerySet, When
 
+from src.core.html import html_to_plain
+
 from .models import Category, Product
 
 # і/ї/є/ґ ↔ и/е/г — інакше «икра» не знаходить «Ікра», «скумбрия» — «Скумбрія».
@@ -48,9 +50,9 @@ def _product_sku_parts(product: Product) -> list[str]:
 def _product_search_parts(product: Product) -> list[str]:
     return [
         *_product_name_parts(product),
-        product.description,
-        getattr(product, "description_uk", "") or "",
-        getattr(product, "description_ru", "") or "",
+        html_to_plain(product.description),
+        html_to_plain(getattr(product, "description_uk", "") or ""),
+        html_to_plain(getattr(product, "description_ru", "") or ""),
         *_product_sku_parts(product),
     ]
 

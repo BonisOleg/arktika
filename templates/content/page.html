@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n static cms_html %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/content.css' %}">
+  <link rel="stylesheet" href="{% static 'css/content.css' %}?v=20260921a">
 {% endblock %}
 
 {% block title %}{{ page.seo_title|default:page_title }} — Арктика{% endblock %}
@@ -16,8 +16,8 @@
     <span aria-current="page">{{ page_title }}</span>
   </nav>
   <h1 class="content-page-title">{{ page.seo_h1|default:page_title }}</h1>
-  <div class="content-page-body">
-    {{ page.body|linebreaks }}
+  <div class="content-page-body cms-html">
+    {{ page.body|cms_html }}
   </div>
 </div>
 {% endblock %}

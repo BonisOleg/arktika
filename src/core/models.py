@@ -1,5 +1,25 @@
 from django.db import models
 
+from src.core.html import sanitize_cms_html
+
+
+class SanitizedHtmlMixin(models.Model):
+    """bleach.clean на html_fields + _uk/_ru (shop_security SEC-04)."""
+
+    html_fields: tuple[str, ...] = ()
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        for field in self.html_fields:
+            for name in (field, f"{field}_uk", f"{field}_ru"):
+                if hasattr(self, name):
+                    value = getattr(self, name)
+                    if value:
+                        setattr(self, name, sanitize_cms_html(value))
+        super().save(*args, **kwargs)
+
 
 class TimeStampedModel(models.Model):
     """Спільні часові поля — успадковують усі сутності tables.md."""

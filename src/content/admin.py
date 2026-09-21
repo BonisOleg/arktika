@@ -2,8 +2,10 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.html import format_html
-from modeltranslation.admin import TabbedTranslationAdmin
+from modeltranslation.admin import TranslationAdmin
 from unfold.admin import ModelAdmin
+
+from src.core.admin_utils import TinyMCEAdminMixin, language_tabs, seo_lang_fields
 
 from .models import (
     AboutPage,
@@ -15,6 +17,7 @@ from .models import (
     SiteSettings,
 )
 from .models_home import HomePage
+from .translation import HOME_I18N_FIELDS
 
 
 class SingletonAdminMixin:
@@ -36,40 +39,20 @@ class SingletonAdminMixin:
         )
 
 
+_PAGE_BODY_TINYMCE = ("body_uk", "body_ru", "body")
+_PAGE_FIELDSETS = language_tabs(
+    uk_fields=("body_uk", *seo_lang_fields("uk")),
+    ru_fields=("body_ru", *seo_lang_fields("ru")),
+)
+
+
 @admin.register(HomePage)
-class HomePageAdmin(SingletonAdminMixin, TabbedTranslationAdmin, ModelAdmin):
+class HomePageAdmin(SingletonAdminMixin, TranslationAdmin, ModelAdmin):
     readonly_fields = ("hero_image_preview",)
-    fieldsets = (
-        (
-            "Hero",
-            {
-                "fields": (
-                    "hero_title_line1",
-                    "hero_title_line2",
-                    "hero_subtitle",
-                    "hero_image",
-                    "hero_image_preview",
-                    "hero_image_alt",
-                    "hero_cta_catalog",
-                    "hero_cta_hits",
-                )
-            },
-        ),
-        ("Хіти продажу", {"fields": ("hits_title", "hits_subtitle")}),
-        ("Новинки", {"fields": ("news_title", "news_subtitle")}),
-        (
-            "Переваги",
-            {
-                "fields": (
-                    "trust1_title",
-                    "trust1_text",
-                    "trust2_title",
-                    "trust2_text",
-                    "trust3_title",
-                    "trust3_text",
-                )
-            },
-        ),
+    fieldsets = language_tabs(
+        shared=("hero_image", "hero_image_preview"),
+        uk_fields=tuple(f"{name}_uk" for name in HOME_I18N_FIELDS),
+        ru_fields=tuple(f"{name}_ru" for name in HOME_I18N_FIELDS),
     )
 
     @admin.display(description="Попередній перегляд")
@@ -80,42 +63,45 @@ class HomePageAdmin(SingletonAdminMixin, TabbedTranslationAdmin, ModelAdmin):
 
 
 @admin.register(AboutPage)
-class AboutPageAdmin(SingletonAdminMixin, TabbedTranslationAdmin, ModelAdmin):
-    fieldsets = (
-        (None, {"fields": ("body",)}),
-        ("SEO", {"fields": ("seo_title", "seo_description", "seo_h1", "seo_keywords"), "classes": ("collapse",)}),
-    )
+class AboutPageAdmin(TinyMCEAdminMixin, SingletonAdminMixin, TranslationAdmin, ModelAdmin):
+    tinymce_fields = _PAGE_BODY_TINYMCE
+    fieldsets = _PAGE_FIELDSETS
 
 
 @admin.register(DeliveryPage)
-class DeliveryPageAdmin(SingletonAdminMixin, TabbedTranslationAdmin, ModelAdmin):
-    fieldsets = AboutPageAdmin.fieldsets
+class DeliveryPageAdmin(TinyMCEAdminMixin, SingletonAdminMixin, TranslationAdmin, ModelAdmin):
+    tinymce_fields = _PAGE_BODY_TINYMCE
+    fieldsets = _PAGE_FIELDSETS
 
 
 @admin.register(OfferPage)
-class OfferPageAdmin(SingletonAdminMixin, TabbedTranslationAdmin, ModelAdmin):
-    fieldsets = AboutPageAdmin.fieldsets
+class OfferPageAdmin(TinyMCEAdminMixin, SingletonAdminMixin, TranslationAdmin, ModelAdmin):
+    tinymce_fields = _PAGE_BODY_TINYMCE
+    fieldsets = _PAGE_FIELDSETS
 
 
 @admin.register(PrivacyPage)
-class PrivacyPageAdmin(SingletonAdminMixin, TabbedTranslationAdmin, ModelAdmin):
-    fieldsets = AboutPageAdmin.fieldsets
+class PrivacyPageAdmin(TinyMCEAdminMixin, SingletonAdminMixin, TranslationAdmin, ModelAdmin):
+    tinymce_fields = _PAGE_BODY_TINYMCE
+    fieldsets = _PAGE_FIELDSETS
 
 
 @admin.register(ContactsPage)
-class ContactsPageAdmin(SingletonAdminMixin, TabbedTranslationAdmin, ModelAdmin):
-    fieldsets = (
-        (None, {"fields": ("intro_text", "wholesale_link_url", "phone", "address")}),
-        ("SEO", {"fields": ("seo_title", "seo_description", "seo_h1", "seo_keywords"), "classes": ("collapse",)}),
+class ContactsPageAdmin(TinyMCEAdminMixin, SingletonAdminMixin, TranslationAdmin, ModelAdmin):
+    tinymce_fields = ("intro_text_uk", "intro_text_ru", "intro_text")
+    fieldsets = language_tabs(
+        shared=("wholesale_link_url", "phone", "address"),
+        uk_fields=("intro_text_uk", *seo_lang_fields("uk")),
+        ru_fields=("intro_text_ru", *seo_lang_fields("ru")),
     )
 
 
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(SingletonAdminMixin, TabbedTranslationAdmin, ModelAdmin):
-    fieldsets = (
-        ("Замовлення", {"fields": ("min_order_amount", "telegram_notify_orders")}),
-        ("Контакти", {"fields": ("phone",)}),
-        ("Футер", {"fields": ("footer_blurb",)}),
+class SiteSettingsAdmin(SingletonAdminMixin, TranslationAdmin, ModelAdmin):
+    fieldsets = language_tabs(
+        shared=("min_order_amount", "telegram_notify_orders", "phone"),
+        uk_fields=("footer_blurb_uk",),
+        ru_fields=("footer_blurb_ru",),
     )
 
 

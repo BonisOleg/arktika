@@ -12,6 +12,7 @@ from src.core.views import healthz
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
+    path("tinymce/", include("tinymce.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("healthz/", healthz),
     path("webhooks/wayforpay/", wayforpay_webhook, name="wayforpay_webhook"),

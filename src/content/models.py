@@ -1,13 +1,14 @@
 from django.db import models
 
-from src.core.models import SeoFieldsMixin, SingletonModel, TimeStampedModel
+from src.core.models import SanitizedHtmlMixin, SeoFieldsMixin, SingletonModel, TimeStampedModel
 
 from .models_home import HomePage  # noqa: F401
 
 DEFAULT_MIN_ORDER_AMOUNT = "500.00"
 
 
-class AboutPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
+class AboutPage(SanitizedHtmlMixin, SingletonModel, TimeStampedModel, SeoFieldsMixin):
+    html_fields = ("body",)
     body = models.TextField("Текст", blank=True)
 
     class Meta:
@@ -18,7 +19,8 @@ class AboutPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
         return "Про нас"
 
 
-class DeliveryPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
+class DeliveryPage(SanitizedHtmlMixin, SingletonModel, TimeStampedModel, SeoFieldsMixin):
+    html_fields = ("body",)
     body = models.TextField("Текст", blank=True)
 
     class Meta:
@@ -29,7 +31,8 @@ class DeliveryPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
         return "Доставка і оплата"
 
 
-class OfferPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
+class OfferPage(SanitizedHtmlMixin, SingletonModel, TimeStampedModel, SeoFieldsMixin):
+    html_fields = ("body",)
     body = models.TextField("Текст оферти", blank=True)
 
     class Meta:
@@ -40,7 +43,8 @@ class OfferPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
         return "Оферта"
 
 
-class PrivacyPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
+class PrivacyPage(SanitizedHtmlMixin, SingletonModel, TimeStampedModel, SeoFieldsMixin):
+    html_fields = ("body",)
     body = models.TextField("Текст політики конфіденційності", blank=True)
 
     class Meta:
@@ -51,7 +55,8 @@ class PrivacyPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
         return "Політика конфіденційності"
 
 
-class ContactsPage(SingletonModel, TimeStampedModel, SeoFieldsMixin):
+class ContactsPage(SanitizedHtmlMixin, SingletonModel, TimeStampedModel, SeoFieldsMixin):
+    html_fields = ("intro_text",)
     intro_text = models.TextField("Текст над формою", blank=True)
     wholesale_link_url = models.URLField(
         "Посилання на опт", default="https://rk-arctica.com.ua/"

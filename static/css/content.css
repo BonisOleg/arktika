@@ -14,10 +14,33 @@
   max-width: 42rem;
   color: var(--color-navy-mid);
   line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
-.content-page-body p {
-  margin-bottom: 1rem;
+.cms-html p {
+  margin: 0;
+}
+
+.cms-html ul,
+.cms-html ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.cms-html a {
+  color: var(--color-navy);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cms-html img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 767px) {
+  .content-page-body {
+    max-width: 100%;
+  }
 }
 
 .contacts-grid {

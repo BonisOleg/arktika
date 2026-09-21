@@ -265,6 +265,23 @@
 .pdp-desc {
   color: var(--color-muted);
   max-width: 42rem;
+  overflow-wrap: anywhere;
+}
+
+.pdp-desc.cms-html p {
+  margin: 0;
+}
+
+.pdp-desc.cms-html ul,
+.pdp-desc.cms-html ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+@media (max-width: 767px) {
+  .pdp-desc {
+    max-width: 100%;
+  }
 }
 
 @media (min-width: 768px) {

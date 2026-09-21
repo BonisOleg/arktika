@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "django.contrib.humanize",
     # 3rd-party
+    "tinymce",
     "django_htmx",
     "csp",
     "django_recaptcha",
@@ -135,6 +136,18 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 днів — досить для guest-кошика
 
 LOGIN_URL = "admin:login"
+
+# admin_skill: django-tinymce лише на великих TextField (опис, CMS body)
+TINYMCE_DEFAULT_CONFIG = {
+    "height": 400,
+    "menubar": False,
+    "plugins": "link lists code",
+    "toolbar": "undo redo | bold italic underline | bullist numlist | link | code",
+    "content_css": False,
+    "skin": "oxide",
+    "promotion": False,
+    "branding": False,
+}
 
 # ── Nova Poshta (Фаза 0.5+) ─────────────────────────────────────────────────
 NP_API_KEY = config("NP_API_KEY", default="")

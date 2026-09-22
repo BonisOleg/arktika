@@ -10,16 +10,42 @@ from .models import NPCity, NPWarehouse
 
 logger = logging.getLogger("src.shipping")
 
+CITY_SEARCH_MIN_LEN = 2
+CITY_SEARCH_LIMIT = 20
+
 
 def is_live_mode() -> bool:
     return bool(settings.NP_API_KEY)
 
 
 def get_cities(query: str = ""):
-    qs = NPCity.objects.filter(is_active=True)
-    if query:
-        qs = qs.filter(name__icontains=query)
-    return qs.order_by("name")[:20]
+    """Автокомпліт міста: не звалювати перші 20 за Unicode (Є < А).
+
+    Порожній фокус / 1 літера — порожньо. «київ» ранжує «Київ» вище за
+    «Андріївка (Київська обл.)». Порівняння через casefold — ILIKE на
+    SQLite/частині collation не згортає кирилицю.
+    """
+    needle = (query or "").strip().casefold()
+    if len(needle) < CITY_SEARCH_MIN_LEN:
+        return []
+
+    scored: list[tuple[int, str, NPCity]] = []
+    for city in NPCity.objects.filter(is_active=True).only("id", "name", "area"):
+        folded = city.name.casefold()
+        base = folded.split(" (", 1)[0]
+        if folded == needle or base == needle:
+            rank = 0
+        elif folded.startswith(needle) or base.startswith(needle):
+            rank = 1
+        elif needle in base:
+            rank = 3
+        elif needle in folded:
+            rank = 4
+        else:
+            continue
+        scored.append((rank, city.name, city))
+    scored.sort(key=lambda row: (row[0], row[1]))
+    return [row[2] for row in scored[:CITY_SEARCH_LIMIT]]
 
 
 def get_warehouses(city_id: int, query: str = ""):

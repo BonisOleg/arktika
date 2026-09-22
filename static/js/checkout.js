@@ -149,7 +149,11 @@
 
   document.body.addEventListener("htmx:afterSwap", (e) => {
     if (e.target.matches("[data-np-options]")) {
-      e.target.classList.add("is-open");
+      if (e.target.querySelector("[data-np-select]")) {
+        e.target.classList.add("is-open");
+      } else {
+        e.target.classList.remove("is-open");
+      }
     }
   });
 })();

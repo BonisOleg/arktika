@@ -4,7 +4,7 @@
     <div class="catalog-card-media">
       {% with photo=product.images.first %}
         {% if photo %}
-          <img src="{{ photo.image.url }}" alt="{{ photo.alt|default:product.name }}">
+          <img src="{{ photo.image.url }}" alt="{{ photo.alt|default:product.name }}" width="800" height="600" decoding="async">
         {% else %}
           <div class="media-placeholder" aria-hidden="true"></div>
         {% endif %}

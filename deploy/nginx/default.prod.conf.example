@@ -19,6 +19,7 @@ server {
 
 server {
     listen 443 ssl default_server;
+    http2 on;
     server_name example.com www.example.com _;
     client_max_body_size 20M;
 
@@ -27,15 +28,23 @@ server {
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers off;
 
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 5;
+    gzip_min_length 256;
+    gzip_types text/plain text/css text/javascript application/javascript application/json image/svg+xml application/manifest+json;
+
     location /static/ {
         alias /app/staticfiles/;
-        expires 30d;
+        expires 365d;
         add_header Cache-Control "public, immutable";
     }
 
     location /media/ {
         alias /app/media/;
-        expires 7d;
+        expires 30d;
+        add_header Cache-Control "public";
     }
 
     location / {

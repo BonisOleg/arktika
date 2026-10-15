@@ -143,7 +143,7 @@
     </div>
     <div class="catalog-grid">
       {% for related in related_products %}
-      {% include "catalog/partials/catalog_card.html" with product=related %}
+      {% include "catalog/partials/catalog_card.html" with product=related card_lazy=True %}
       {% endfor %}
     </div>
   </section>

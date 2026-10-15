@@ -91,7 +91,7 @@
       style="--grid-cols-desktop: {{ cols }};">
       {% trans "Новинка" as news_badge %}
       {% for product in new_products %}
-        {% include "catalog/partials/catalog_card.html" with card_badge=news_badge %}
+        {% include "catalog/partials/catalog_card.html" with card_badge=news_badge card_lazy=True %}
       {% endfor %}
     </div>
     {% endwith %}

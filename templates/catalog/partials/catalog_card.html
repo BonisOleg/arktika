@@ -4,7 +4,7 @@
     <div class="catalog-card-media">
       {% with photo=product.images.first %}
         {% if photo %}
-          <img src="{{ photo.image.url }}" alt="{{ photo.alt|default:product.name }}" width="800" height="600" decoding="async">
+          <img src="{{ photo.image.url }}" alt="{{ photo.alt|default:product.name }}" width="800" height="600" decoding="async" loading="{% if forloop.counter <= 4 and not card_lazy %}eager{% else %}lazy{% endif %}"{% if forloop.counter == 1 and not card_lazy %} fetchpriority="high"{% endif %}>
         {% else %}
           <div class="media-placeholder" aria-hidden="true"></div>
         {% endif %}

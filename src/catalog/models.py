@@ -109,7 +109,7 @@ class ProductWeightOption(TimeStampedModel):
             "«шт»/«пач»/«уп»/«ящик» — штучний товар: ціна за 1 одиницю, кількість цілими."
         ),
     )
-    price = models.DecimalField("Ціна з ПДВ", max_digits=10, decimal_places=2, help_text="Ціна за 1 одиницю з обраного «Одиниця» (за 1 кг, якщо кг; за 1 шт/пач/уп/ящик — якщо штучний).")
+    price = models.DecimalField("Ціна", max_digits=10, decimal_places=2, help_text="Ціна за 1 одиницю з обраного «Одиниця» (за 1 кг, якщо кг; за 1 шт/пач/уп/ящик — якщо штучний).")
     sku = models.CharField("Артикул", max_length=64, unique=True)
     is_default = models.BooleanField("Основний варіант", default=False)
     sort_order = models.PositiveSmallIntegerField("Порядок", default=0)

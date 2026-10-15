@@ -91,7 +91,7 @@ class Order(TimeStampedModel):
     np_warehouse_name = models.CharField("Відділення", max_length=255, blank=True)
 
     subtotal_amount = models.DecimalField("Сума товарів", max_digits=10, decimal_places=2)
-    vat_amount = models.DecimalField("в т.ч. ПДВ", max_digits=10, decimal_places=2, default=0)
+    vat_amount = models.DecimalField("Податок у сумі", max_digits=10, decimal_places=2, default=0)
     total_amount = models.DecimalField("До сплати", max_digits=10, decimal_places=2)
 
     consent_gdpr = models.BooleanField("Згода на обробку ПД", default=False)

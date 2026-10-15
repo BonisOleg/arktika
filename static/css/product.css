@@ -14,6 +14,7 @@
 }
 
 .pdp-main-image {
+  position: relative;
   width: 100%;
   aspect-ratio: 5 / 3;
   height: auto;
@@ -26,10 +27,19 @@
 }
 
 .pdp-main-image img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center;
+}
+
+.pdp-main-image [data-main-photo].media-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .pdp-thumbs {

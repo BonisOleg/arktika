@@ -52,7 +52,6 @@
         <div class="price-with-vat">
           <span class="price"><span data-price>{{ default_option.price }}</span> грн<span class="price-unit"
               data-unit-suffix>/{{ default_option.get_unit_display }}</span></span>
-          <span class="price-vat">{% trans "з ПДВ" %}</span>
         </div>
         {% if product.is_available %}
         <span class="badge badge-ok">{% trans "В наявності" %}</span>

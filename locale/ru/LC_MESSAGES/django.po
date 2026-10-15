@@ -205,12 +205,6 @@ msgstr "Фото"
 msgid "Артикул"
 msgstr "Артикул"
 
-#: templates/catalog/detail.html:53
-#: templates/catalog/partials/catalog_card.html:19 templates/core/home.html:56
-#: templates/core/home.html:83
-msgid "з ПДВ"
-msgstr "с НДС"
-
 #: templates/catalog/detail.html:56 templates/core/home.html:57
 msgid "В наявності"
 msgstr "В наличии"

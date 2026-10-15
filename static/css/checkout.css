@@ -103,10 +103,6 @@
   color: var(--color-muted);
 }
 
-.summary-totals .vat-line {
-  font-size: 0.9rem;
-}
-
 .summary-totals .grand {
   margin-top: 0.35rem;
   padding-top: 0.75rem;

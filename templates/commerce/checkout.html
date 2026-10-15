@@ -115,7 +115,6 @@
         {% endfor %}
       </div>
       <div class="summary-totals">
-        <div class="vat-line"><span>{% trans "в т.ч. ПДВ" %}</span><span>{{ vat_amount|floatformat:2 }} грн</span></div>
         <div class="grand"><span>{% trans "До сплати" %}</span><span>{{ subtotal }} грн</span></div>
       </div>
       {% if subtotal < min_order_amount %}

@@ -373,10 +373,6 @@ msgstr "политика конфиденциальности"
 msgid "Ваше замовлення"
 msgstr "Ваш заказ"
 
-#: templates/commerce/checkout.html:105
-msgid "в т.ч. ПДВ"
-msgstr "в т.ч. НДС"
-
 #: templates/commerce/checkout.html:106
 #: templates/commerce/order_success.html:26
 msgid "До сплати"

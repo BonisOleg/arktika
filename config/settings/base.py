@@ -1,6 +1,7 @@
 """Спільні налаштування Arctica. Секрети — лише через .env (python-decouple)."""
 from pathlib import Path
 
+from csp.constants import NONCE
 from decouple import Csv, config
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -77,6 +78,7 @@ TEMPLATES = [
                 "django.template.context_processors.i18n",
                 "src.core.context_processors.site_settings",
                 "src.core.context_processors.hreflang_urls",
+                "src.core.context_processors.gtm",
                 "src.catalog.context_processors.header_catalog",
                 "src.commerce.context_processors.cart_summary",
             ],
@@ -176,18 +178,56 @@ SILENCED_SYSTEM_CHECKS = ["django_recaptcha.recaptcha_test_key_error"]
 # ── Мінімальна сума замовлення — фолбек, канонічне значення в SiteSettings ─
 DEFAULT_MIN_ORDER_AMOUNT = "500.00"
 
+# ── Google Tag Manager ──────────────────────────────────────────────────────
+GTM_ID = config("GTM_ID", default="GTM-K62J62KG")
+
 # ── CSP (day one, django-csp 4.0 dict-based формат) ─────────────────────────
 CONTENT_SECURITY_POLICY = {
     # Unfold/Alpine.js потребують unsafe-eval в адмінці — виняток лише для ADMIN_URL
     "EXCLUDE_URL_PREFIXES": [f"/{ADMIN_URL}"],
     "DIRECTIVES": {
         "default-src": ["'self'"],
-        "script-src": ["'self'"],
+        "script-src": [
+            "'self'",
+            NONCE,
+            "https://www.googletagmanager.com",
+            "https://*.googletagmanager.com",
+            "https://*.google-analytics.com",
+            "https://*.googleadservices.com",
+            "https://*.doubleclick.net",
+            "https://*.google.com",
+            "https://www.gstatic.com",  # reCAPTCHA
+        ],
         "style-src": ["'self'"],
         "font-src": ["'self'"],
-        "img-src": ["'self'", "data:"],
-        "connect-src": ["'self'"],
-        "frame-src": ["https://www.google.com"],  # reCAPTCHA
+        "img-src": [
+            "'self'",
+            "data:",
+            "https://www.googletagmanager.com",
+            "https://*.googletagmanager.com",
+            "https://www.google-analytics.com",
+            "https://*.google-analytics.com",
+            "https://*.analytics.google.com",
+            "https://*.googleadservices.com",
+            "https://*.doubleclick.net",
+            "https://*.google.com",
+        ],
+        "connect-src": [
+            "'self'",
+            "https://www.googletagmanager.com",
+            "https://*.googletagmanager.com",
+            "https://www.google-analytics.com",
+            "https://*.google-analytics.com",
+            "https://*.analytics.google.com",
+            "https://*.googleadservices.com",
+            "https://*.doubleclick.net",
+            "https://*.google.com",
+        ],
+        "frame-src": [
+            "https://www.google.com",
+            "https://www.googletagmanager.com",
+            "https://*.doubleclick.net",
+        ],  # reCAPTCHA + GTM
         "frame-ancestors": ["'none'"],
     },
 }

@@ -9,6 +9,11 @@ def site_settings(request):
     return {"site_settings": SiteSettings.load()}
 
 
+def gtm(request):
+    """Google Tag Manager container ID для base.html."""
+    return {"GTM_ID": settings.GTM_ID}
+
+
 def hreflang_urls(request):
     """SEO/SKILL.md §1.1/§4 — canonical (без query params), self-referencing hreflang (uk/ru)
     + x-default (LANGUAGE_CODE=uk). Без translate_url (django-i18n-prefix-switcher)."""

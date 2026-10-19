@@ -69,9 +69,10 @@ class CheckoutForm(forms.Form):
         super().__init__(*args, **kwargs)
         if settings.RECAPTCHA_PUBLIC_KEY and settings.RECAPTCHA_PRIVATE_KEY:
             from django_recaptcha.fields import ReCaptchaField
-            from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
-            self.fields["captcha"] = ReCaptchaField(widget=ReCaptchaV2Checkbox, label="")
+            from src.core.widgets import ReCaptchaV2CheckboxCSP
+
+            self.fields["captcha"] = ReCaptchaField(widget=ReCaptchaV2CheckboxCSP, label="")
 
         # Строгий вибір зі списку НП — лише коли увімкнено NP_REQUIRE_REF_SELECTION.
         if settings.NP_REQUIRE_REF_SELECTION:
